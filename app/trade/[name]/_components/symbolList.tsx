@@ -1,24 +1,35 @@
+'use client';
+
 import { SymbolData } from '@/types/binance';
 import SymbolListItem from './symbolListItem';
+import { useState } from 'react';
+import SymbolSearchBar from './symbolSearchBar';
 
-export default async function SymbolList() {
-  const sortBy = 'price';
-  const currency = 'USDT';
-  const list = await fetch(
-    `http://localhost:3000/api/totalList?sortBy=${sortBy}&currency=${currency}`
+interface Props {
+  data: SymbolData[];
+}
+
+export default function SymbolList({ data }: Props) {
+  const [keyword, setKeyword] = useState('');
+  const filteredList = data.filter((item) =>
+    item.symbol.toLowerCase().includes(keyword.toLowerCase())
   );
-  const result: SymbolData[] = await list.json();
+
+  const changeKeyword = (value: string) => {
+    setKeyword(value);
+  };
+
   return (
     <div className='relative rounded-lg border h-[400px] max-w-[350px] overflow-scroll'>
-      <div className='sticky top-0 bg-white flex w-full justify-between pt-3 px-3'>
-        <p className='text-lg'>List</p>
-        <div className='flex gap-2'>
-          <p>{currency}</p>
-          <p>{sortBy}</p>
+      <div className='sticky top-0 bg-white flex flex-col w-full pt-3 px-3 gap-2'>
+        <SymbolSearchBar onChange={changeKeyword} />
+        <div className='flex justify-between'>
+          <p>USDT</p>
+          <p>가격순</p>
         </div>
       </div>
       <ul className='flex flex-col'>
-        {result.map((item) => (
+        {filteredList.map((item) => (
           <li key={item.symbol}>
             <SymbolListItem symbol={item} />
           </li>
