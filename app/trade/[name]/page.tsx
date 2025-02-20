@@ -1,4 +1,6 @@
-import SymbolList from './_components/symbolList';
+import { Suspense } from 'react';
+import SymbolListSkeleton from './_components/symbolListSkeleton';
+import SymbolListContainer from './_components/symbolListContainer';
 
 export default async function Page({
   params,
@@ -9,7 +11,9 @@ export default async function Page({
   return (
     <>
       {symbolName}
-      <SymbolList />
+      <Suspense fallback={<SymbolListSkeleton />}>
+        <SymbolListContainer />
+      </Suspense>
     </>
   );
 }

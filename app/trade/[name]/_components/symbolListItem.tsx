@@ -1,3 +1,5 @@
+'use client';
+
 import { SymbolData } from '@/types/binance';
 import Link from 'next/link';
 
@@ -5,7 +7,7 @@ interface Props {
   symbol: SymbolData;
 }
 
-export default async function SymbolListItem({ symbol }: Props) {
+export default function SymbolListItem({ symbol }: Props) {
   const formatNumber = (value: string) => {
     const num = parseFloat(value);
     // 1보다 작은 경우, 소수점 4자리까지 표시
