@@ -9,7 +9,7 @@ export default async function SymbolInfo({ name }: Props) {
   const data = await fetch(`http://localhost:3000/api/detail?name=${name}`);
   const result: SymbolData = await data.json();
   return (
-    <div className='h-16 p-4 flex items-center justify-between gap-3 border rounded-md w-[750px]'>
+    <div className='h-16 p-4 flex items-center justify-between gap-3 border rounded-md w-full'>
       <div className='flex gap-2'>
         <p className='text-xl font-semibold'>{name}</p>
         <p className='text-xl font-semibold'>
