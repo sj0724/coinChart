@@ -3,6 +3,7 @@ import SymbolListSkeleton from './_components/symbolListSkeleton';
 import SymbolListContainer from './_components/symbolListContainer';
 import SymbolInfo from './_components/symbolInfo';
 import OrderBookContainer from './_components/orderContainer';
+import Chart from './_components/chart';
 
 export default async function Page({
   params,
@@ -11,11 +12,11 @@ export default async function Page({
 }) {
   const symbolName = (await params).name;
   return (
-    <div className='flex w-full'>
+    <div className='flex w-full gap-2'>
       <OrderBookContainer name={symbolName} />
-      <div className='flex flex-col'>
+      <div className='flex flex-col gap-2'>
         <SymbolInfo name={symbolName} />
-        <div className='bg-gray-200 rounded-lg h-[500px]' />
+        <Chart symbol={symbolName} />
       </div>
       <Suspense fallback={<SymbolListSkeleton />}>
         <SymbolListContainer />
