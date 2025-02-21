@@ -21,3 +21,9 @@ export type SymbolData = {
   lastId: number;
   count: number;
 };
+
+export type Order = {
+  lastUpdateId: number;
+  bids: string[]; // first : PRICE, seconde : QTY
+  asks: string[];
+};
