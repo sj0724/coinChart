@@ -20,7 +20,7 @@ export default function SymbolList({ data }: Props) {
   };
 
   return (
-    <div className='relative rounded-lg border h-[400px] max-w-[350px] overflow-scroll'>
+    <div className='relative rounded-lg border h-[400px] w-[300px] overflow-scroll'>
       <div className='sticky top-0 bg-white flex flex-col w-full pt-3 px-3 gap-2'>
         <SymbolSearchBar onChange={changeKeyword} />
         <div className='flex justify-between'>
