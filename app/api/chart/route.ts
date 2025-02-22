@@ -4,10 +4,11 @@ export async function GET(req: Request) {
     const symbolName = url.searchParams.get('name') || '';
     const limit = url.searchParams.get('limit') || '200';
     const endTime = url.searchParams.get('endTime');
+    const interval = url.searchParams.get('interval') || '1w';
 
     const apiUrl = new URL('https://api.binance.com/api/v3/klines');
     apiUrl.searchParams.append('symbol', symbolName);
-    apiUrl.searchParams.append('interval', '1w');
+    apiUrl.searchParams.append('interval', interval);
     apiUrl.searchParams.append('limit', limit);
 
     if (endTime) {

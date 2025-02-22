@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from 'react';
 import { createChart, CandlestickSeries, LineSeries } from 'lightweight-charts';
 import { Candle, Volume } from '@/types/chart';
 import { numberWithUnit } from '@/utils/numberWithUnit';
+import IntervalMenu from './intervalMenu';
 
 interface Props {
   symbol: string;
@@ -19,12 +20,17 @@ export default function Chart({ symbol }: Props) {
   const [hoverData, setHoverData] = useState<HoverData | null>(null);
   const endTimeRef = useRef<number | null>(null);
   const isLoadingRef = useRef(false);
+  const [chartInterval, setChartInterval] = useState('1w');
+
+  const changeInterval = (value: string) => {
+    setChartInterval(value);
+  };
 
   const fetchNewChartData = async () => {
     isLoadingRef.current = true;
     const endTime = endTimeRef.current ? endTimeRef.current * 1000 : '';
     const data = await fetch(
-      `http://localhost:3000/api/chart?name=${symbol}&endTime=${endTime}`
+      `http://localhost:3000/api/chart?name=${symbol}&endTime=${endTime}&interval=${chartInterval}`
     );
     const result = await data.json();
     const newCandle = result.map((candle: any) => ({
@@ -62,11 +68,12 @@ export default function Chart({ symbol }: Props) {
     const lineSeries = chart.addSeries(LineSeries, {
       color: '#2962FF',
       priceScaleId: '',
+      lineWidth: 2,
     });
 
     const fetchChartData = async () => {
       const data = await fetch(
-        `http://localhost:3000/api/chart?name=${symbol}`
+        `http://localhost:3000/api/chart?name=${symbol}&interval=${chartInterval}`
       );
       const result = await data.json();
 
@@ -141,45 +148,51 @@ export default function Chart({ symbol }: Props) {
     return () => {
       chart.remove();
     };
-  }, []);
+  }, [chartInterval]);
 
   return (
-    <div className='relative'>
-      {hoverData && (
-        <div className='absolute top-0 w-full p-4 rounded-md z-30 flex text-sm gap-3 text-gray-600'>
-          <p>
-            {new Date(
-              Number(hoverData.candle.time) * 1000
-            ).toLocaleDateString()}
-          </p>
-          <div className='flex flex-col gap-2'>
-            <div className='flex gap-5'>
-              {Object.keys(hoverData.candle)
-                .filter((key) => key !== 'time')
-                .map((key) => {
-                  const value = hoverData.candle[key as keyof Candle];
-                  const textColor =
-                    hoverData.candle.open > hoverData.candle.close
-                      ? 'text-red-600'
-                      : 'text-green-500';
-                  return (
-                    <p key={key}>
-                      {key} :{' '}
-                      <span className={textColor}>{value.toString()}</span>
-                    </p>
-                  );
-                })}
-            </div>
+    <>
+      <IntervalMenu
+        changeInterval={changeInterval}
+        chartInterval={chartInterval}
+      />
+      <div className='relative'>
+        {hoverData && (
+          <div className='absolute top-0 w-full p-4 rounded-md z-30 flex text-sm gap-3 text-gray-600'>
             <p>
-              volume :{' '}
-              <span className='text-blue-600'>
-                {numberWithUnit(hoverData.line.value)}
-              </span>
+              {new Date(
+                Number(hoverData.candle.time) * 1000
+              ).toLocaleDateString()}
             </p>
+            <div className='flex flex-col gap-2'>
+              <div className='flex gap-5'>
+                {Object.keys(hoverData.candle)
+                  .filter((key) => key !== 'time')
+                  .map((key) => {
+                    const value = hoverData.candle[key as keyof Candle];
+                    const textColor =
+                      hoverData.candle.open > hoverData.candle.close
+                        ? 'text-red-600'
+                        : 'text-green-500';
+                    return (
+                      <p key={key}>
+                        {key} :{' '}
+                        <span className={textColor}>{value.toString()}</span>
+                      </p>
+                    );
+                  })}
+              </div>
+              <p>
+                volume :{' '}
+                <span className='text-blue-600'>
+                  {numberWithUnit(hoverData.line.value)}
+                </span>
+              </p>
+            </div>
           </div>
-        </div>
-      )}
-      <div ref={chartRef} className='border rounded-md p-5' />
-    </div>
+        )}
+        <div ref={chartRef} className='border rounded-md p-5' />
+      </div>
+    </>
   );
 }
