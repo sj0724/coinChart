@@ -1,21 +1,22 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
-import {
-  createChart,
-  CandlestickSeries,
-  HistogramSeries,
-} from 'lightweight-charts';
-import { Candle } from '@/types/chart';
+import { createChart, CandlestickSeries, LineSeries } from 'lightweight-charts';
+import { Candle, Volume } from '@/types/chart';
+import { numberWithUnit } from '@/utils/numberWithUnit';
 
 interface Props {
   symbol: string;
 }
 
+type HoverData = {
+  candle: Candle;
+  line: Volume;
+};
+
 export default function Chart({ symbol }: Props) {
   const chartRef = useRef<HTMLDivElement>(null);
-  const volumeChartRef = useRef<HTMLDivElement>(null);
-  const [hoverData, setHoverData] = useState<Candle | null>(null);
+  const [hoverData, setHoverData] = useState<HoverData | null>(null);
   const endTimeRef = useRef<number | null>(null);
   const isLoadingRef = useRef(false);
 
@@ -36,29 +37,31 @@ export default function Chart({ symbol }: Props) {
     const newHistogram = result.map((histogram: any) => ({
       time: histogram[0] / 1000,
       value: parseFloat(histogram[5]),
-      color:
-        parseFloat(histogram[4]) < parseFloat(histogram[1]) ? 'red' : '#26a69a',
     }));
     endTimeRef.current = newCandle[0].time as number;
     return { candle: newCandle, histogram: newHistogram };
   };
 
   useEffect(() => {
-    if (!chartRef.current || !volumeChartRef.current) return;
+    if (!chartRef.current) return;
 
     const chart = createChart(chartRef.current, {
       width: 750,
       height: 500,
-    });
-    const volumeChart = createChart(volumeChartRef.current, {
-      width: 750,
-      height: 150,
+      layout: {
+        background: { color: 'white' },
+        textColor: '#333',
+      },
+      timeScale: {
+        timeVisible: true,
+        secondsVisible: false,
+      },
     });
 
     const candleSeries = chart.addSeries(CandlestickSeries);
-    const histogramSeries = volumeChart.addSeries(HistogramSeries, {
-      color: '#26a69a',
-      priceFormat: { type: 'volume' },
+    const lineSeries = chart.addSeries(LineSeries, {
+      color: '#2962FF',
+      priceScaleId: '',
     });
 
     const fetchChartData = async () => {
@@ -74,24 +77,24 @@ export default function Chart({ symbol }: Props) {
         low: parseFloat(candle[3]),
         close: parseFloat(candle[4]),
       }));
-      const formattedHistogramData = result.map((histogram: any) => ({
-        time: histogram[0] / 1000,
-        value: parseFloat(histogram[5]),
-        color:
-          parseFloat(histogram[4]) < parseFloat(histogram[1])
-            ? 'red'
-            : '#26a69a',
+      const formattedLineData = result.map((line: any) => ({
+        time: line[0] / 1000,
+        value: parseFloat(line[5]),
       }));
 
       candleSeries.setData(formattedCandleData);
-      histogramSeries.setData(formattedHistogramData);
+      lineSeries.setData(formattedLineData);
       endTimeRef.current = formattedCandleData[0].time as number;
     };
 
     chart.subscribeCrosshairMove((param) => {
-      const data = param.seriesData.get(candleSeries);
-      if (data) {
-        setHoverData(data as Candle);
+      const candleData = param.seriesData.get(candleSeries);
+      const lineData = param.seriesData.get(lineSeries);
+      if (candleData && lineData) {
+        setHoverData({
+          candle: candleData as Candle,
+          line: lineData as Volume,
+        });
       }
     });
 
@@ -103,7 +106,7 @@ export default function Chart({ symbol }: Props) {
 
         if (result.candle.length > 1) {
           const oldCandleData = candleSeries.data(); // 기존 데이터 가져오기
-          const oldHistogramData = histogramSeries.data();
+          const oldLineData = lineSeries.data();
           // 기존 데이터의 time 값들을 Set에 저장
           const existingTimes = new Set(oldCandleData.map((c) => c.time));
 
@@ -119,13 +122,13 @@ export default function Chart({ symbol }: Props) {
             ...filteredNewCandles,
             ...oldCandleData,
           ].sort((a, b) => a.time - b.time);
-          const sortedHistogramData = [
+          const sortedLineData = [
             ...filteredNewHistograms,
-            ...oldHistogramData,
+            ...oldLineData,
           ].sort((a, b) => a.time - b.time);
 
           candleSeries.setData(sortedCandleData);
-          histogramSeries.setData(sortedHistogramData);
+          lineSeries.setData(sortedLineData);
           endTimeRef.current = sortedCandleData[0].time;
           isLoadingRef.current = false;
         } else {
@@ -143,26 +146,40 @@ export default function Chart({ symbol }: Props) {
   return (
     <div className='relative'>
       {hoverData && (
-        <div className='absolute top-0 w-full p-4 rounded-md z-30 flex gap-5 text-sm'>
-          <p>{new Date(Number(hoverData.time) * 1000).toLocaleDateString()}</p>
-          {Object.keys(hoverData)
-            .filter((key) => key !== 'time')
-            .map((key) => {
-              const value = hoverData[key as keyof Candle];
-              const textColor =
-                hoverData.open > hoverData.close
-                  ? 'text-red-600'
-                  : 'text-green-500';
-              return (
-                <p key={key}>
-                  {key} : <span className={textColor}>{value.toString()}</span>
-                </p>
-              );
-            })}
+        <div className='absolute top-0 w-full p-4 rounded-md z-30 flex text-sm gap-3 text-gray-600'>
+          <p>
+            {new Date(
+              Number(hoverData.candle.time) * 1000
+            ).toLocaleDateString()}
+          </p>
+          <div className='flex flex-col gap-2'>
+            <div className='flex gap-5'>
+              {Object.keys(hoverData.candle)
+                .filter((key) => key !== 'time')
+                .map((key) => {
+                  const value = hoverData.candle[key as keyof Candle];
+                  const textColor =
+                    hoverData.candle.open > hoverData.candle.close
+                      ? 'text-red-600'
+                      : 'text-green-500';
+                  return (
+                    <p key={key}>
+                      {key} :{' '}
+                      <span className={textColor}>{value.toString()}</span>
+                    </p>
+                  );
+                })}
+            </div>
+            <p>
+              volume :{' '}
+              <span className='text-blue-600'>
+                {numberWithUnit(hoverData.line.value)}
+              </span>
+            </p>
+          </div>
         </div>
       )}
       <div ref={chartRef} className='border rounded-md p-5' />
-      <div ref={volumeChartRef} className='border rounded-md p-5 mt-4' />
     </div>
   );
 }

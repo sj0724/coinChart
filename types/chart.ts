@@ -7,3 +7,8 @@ export type Candle = {
   low: number;
   close: number;
 };
+
+export type Volume = {
+  time: Time;
+  value: number;
+};
