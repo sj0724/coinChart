@@ -11,6 +11,26 @@ interface Props {
 export default function Chart({ symbol }: Props) {
   const chartRef = useRef<HTMLDivElement>(null);
   const [hoverData, setHoverData] = useState<Candle | null>(null);
+  const endTimeRef = useRef<number | null>(null);
+  const isLoadingRef = useRef(false);
+
+  const fetchNewCandles = async () => {
+    isLoadingRef.current = true;
+    const endTime = endTimeRef.current ? endTimeRef.current * 1000 : '';
+    const data = await fetch(
+      `http://localhost:3000/api/chart?name=${symbol}&endTime=${endTime}`
+    );
+    const result = await data.json();
+    const newCandle = result.map((candle: any) => ({
+      time: candle[0] / 1000, // UNIX timestamp (초 단위)
+      open: parseFloat(candle[1]),
+      high: parseFloat(candle[2]),
+      low: parseFloat(candle[3]),
+      close: parseFloat(candle[4]),
+    }));
+    endTimeRef.current = newCandle[0].time as number;
+    return newCandle;
+  };
 
   useEffect(() => {
     if (!chartRef.current) return;
@@ -37,6 +57,7 @@ export default function Chart({ symbol }: Props) {
       }));
 
       candleSeries.setData(formattedData);
+      endTimeRef.current = formattedData[0].time as number;
     };
 
     chart.subscribeCrosshairMove((param) => {
@@ -46,6 +67,33 @@ export default function Chart({ symbol }: Props) {
       }
     });
 
+    chart.timeScale().subscribeVisibleTimeRangeChange(async (timeRange) => {
+      if (!timeRange || !endTimeRef.current || isLoadingRef.current) return;
+
+      if (Number(timeRange.from) <= endTimeRef.current) {
+        const result = await fetchNewCandles();
+
+        if (result.length > 1) {
+          const oldData = candleSeries.data(); // 기존 데이터 가져오기
+          // 기존 데이터의 time 값들을 Set에 저장
+          const existingTimes = new Set(oldData.map((c) => c.time));
+
+          // 기존 데이터와 중복되지 않는 새 데이터만 추가
+          const filteredNewCandles = result.filter(
+            (c: any) => !existingTimes.has(c.time)
+          );
+          // 시간 정렬
+          const sortedData = [...filteredNewCandles, ...oldData].sort(
+            (a, b) => a.time - b.time
+          );
+          candleSeries.setData(sortedData);
+          endTimeRef.current = sortedData[0].time;
+          isLoadingRef.current = false;
+        } else {
+          endTimeRef.current = null;
+        }
+      }
+    });
     fetchCandles();
 
     return () => {
