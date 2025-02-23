@@ -1,5 +1,3 @@
-import { Suspense } from 'react';
-import SymbolListSkeleton from './_components/symbolListSkeleton';
 import SymbolInfo from './_components/symbolInfo';
 import OrderBookContainer from './_components/orderContainer';
 import Chart from './_components/chart';
@@ -22,9 +20,7 @@ export default async function Page({
         <TradingBoard />
       </div>
       <div className='flex flex-col gap-2'>
-        <Suspense fallback={<SymbolListSkeleton />}>
-          <SymbolList />
-        </Suspense>
+        <SymbolList />
         <TradingList symbol={symbolName} />
       </div>
     </div>
