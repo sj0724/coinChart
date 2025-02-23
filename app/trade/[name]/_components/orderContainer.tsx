@@ -1,3 +1,6 @@
+'use client';
+
+import { useEffect, useState } from 'react';
 import { Order } from '@/types/binance';
 import { numberWithUnit } from '@/utils/numberWithUnit';
 
@@ -5,11 +8,32 @@ interface Props {
   name: string;
 }
 
-export default async function OrderBookContainer({ name }: Props) {
-  const data = await fetch(`http://localhost:3000/api/order?name=${name}`);
-  const result: Order = await data.json();
-  const askList = result.asks.reverse();
-  const bidList = result.bids;
+export default function OrderBookContainer({ name }: Props) {
+  const [orderData, setOrderData] = useState<Order | null>(null);
+
+  const fetchOrderBook = async () => {
+    try {
+      const data = await fetch(`http://localhost:3000/api/order?name=${name}`);
+      const result: Order = await data.json();
+      setOrderData(result);
+    } catch (error) {
+      console.error('Error fetching order book:', error);
+    }
+  };
+
+  useEffect(() => {
+    fetchOrderBook();
+    const intervalId = setInterval(fetchOrderBook, 5000); // 5초마다 데이터 갱신
+
+    return () => clearInterval(intervalId);
+  }, [name]);
+
+  if (!orderData) {
+    return <div className='border rounded-md p-3 w-[300px] h-[700px]'></div>;
+  }
+
+  const askList = [...orderData.asks].reverse();
+  const bidList = orderData.bids;
 
   return (
     <div className='border rounded-md p-3 w-[300px]'>

@@ -158,7 +158,10 @@ export default function Chart({ symbol }: Props) {
             </div>
           </div>
         )}
-        <div ref={chartRef} className='border rounded-md p-5' />
+        <div
+          ref={chartRef}
+          className='border rounded-md p-5 min-w-[750px] min-h-[500px]'
+        />
       </div>
     </>
   );
