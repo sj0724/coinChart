@@ -35,8 +35,10 @@ export default function OrderBookContainer({ name }: Props) {
     return <div className='border rounded-md p-3 w-[300px] h-[700px]'></div>;
   }
 
-  const askList = [...orderData.asks].reverse();
-  const bidList = orderData.bids;
+  const askList = Array.isArray(orderData?.asks)
+    ? [...orderData.asks].reverse()
+    : [];
+  const bidList = Array.isArray(orderData?.bids) ? orderData.bids : [];
 
   const test = (index: number) => {
     const newPrice = Number(askList[index][0]);
