@@ -28,7 +28,7 @@ export default function OrderBookContainer({ name }: Props) {
     const intervalId = setInterval(fetchOrderBook, 5000); // 5초마다 데이터 갱신
 
     return () => clearInterval(intervalId);
-  }, [name, fetchOrderBook]);
+  }, [name]);
 
   if (!orderData) {
     return <div className='border rounded-md p-3 w-[300px] h-[700px]'></div>;

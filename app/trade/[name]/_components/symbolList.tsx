@@ -44,7 +44,7 @@ export default function SymbolList() {
     const intervalId = setInterval(fetchSymbolList, 5000); // 5초마다 데이터 갱신
 
     return () => clearInterval(intervalId);
-  }, [sortBy, fetchSymbolList]);
+  }, [sortBy]);
 
   if (!symbolData) {
     return <div className='border rounded-md p-3 h-[400px] w-[300px]'></div>;
