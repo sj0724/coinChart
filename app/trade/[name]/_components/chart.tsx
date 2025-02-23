@@ -50,8 +50,8 @@ export default function Chart({ symbol }: Props) {
     }
 
     const chart = createChart(chartRef.current, {
-      width: 750,
-      height: 500,
+      width: 800,
+      height: 550,
       layout: {
         background: { color: 'white' },
         textColor: 'black',
@@ -160,7 +160,7 @@ export default function Chart({ symbol }: Props) {
         )}
         <div
           ref={chartRef}
-          className='border rounded-md p-5 min-w-[750px] min-h-[500px]'
+          className='border rounded-md p-5 min-w-[840px] min-h-[590px]'
         />
       </div>
     </>

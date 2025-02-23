@@ -55,7 +55,7 @@ export default function SymbolList() {
   );
 
   return (
-    <div className='relative rounded-lg border h-[400px] w-[300px] overflow-scroll'>
+    <div className='relative rounded-lg border h-[500px] w-[300px] overflow-scroll'>
       <div className='sticky top-0 bg-white flex flex-col w-full pt-3 px-3 gap-2 text-sm'>
         <SymbolSearchBar onChange={changeKeyword} />
         <div className='flex justify-between'>
