@@ -1,3 +1,5 @@
+import { BASE_BINANCE_URL } from '@/lib/constance';
+
 export async function GET(req: Request) {
   try {
     const url = new URL(req.url);
@@ -5,7 +7,7 @@ export async function GET(req: Request) {
 
     // 24시간 거래량 데이터
     const response = await fetch(
-      `https://api.binance.com/api/v3/ticker?symbol=${symbolName}`
+      `${BASE_BINANCE_URL}/ticker?symbol=${symbolName}`
     );
     const data = await response.json();
 

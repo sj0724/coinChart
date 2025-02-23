@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { Order } from '@/types/binance';
 import { numberWithUnit } from '@/utils/numberWithUnit';
 import useCoinStore from '@/store/useCoinStore';
+import { BASE_URL } from '@/lib/constance';
 
 interface Props {
   name: string;
@@ -15,7 +16,7 @@ export default function OrderBookContainer({ name }: Props) {
 
   const fetchOrderBook = async () => {
     try {
-      const data = await fetch(`http://localhost:3000/api/order?name=${name}`);
+      const data = await fetch(`${BASE_URL}/order?name=${name}`);
       const result: Order = await data.json();
       setOrderData(result);
     } catch (error) {

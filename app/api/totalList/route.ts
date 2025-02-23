@@ -1,3 +1,4 @@
+import { BASE_BINANCE_URL } from '@/lib/constance';
 import { SymbolData } from '@/types/binance';
 
 export async function GET(req: Request) {
@@ -7,7 +8,7 @@ export async function GET(req: Request) {
     const currencyFilter = url.searchParams.get('currency') || ''; // 특정 통화 필터링, 기본값 전체
 
     // 24시간 거래량 데이터
-    const response = await fetch('https://api.binance.com/api/v3/ticker/24hr');
+    const response = await fetch(`${BASE_BINANCE_URL}/ticker/24hr`);
     const data = await response.json();
 
     // 특정 통화 필터링

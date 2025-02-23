@@ -1,6 +1,6 @@
 'use client';
 
-const INTERVAL_MENU = ['3m', '15m', '1h', '4h', '1d', '1w'];
+import { INTERVAL_MENU } from '@/lib/menu';
 
 interface Props {
   changeInterval: (value: string) => void;

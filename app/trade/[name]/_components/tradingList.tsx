@@ -1,9 +1,8 @@
 'use client';
 
+import { BASE_WS_URL } from '@/lib/constance';
 import { formatNumber } from '@/utils/formatNumber';
 import { useEffect, useState } from 'react';
-
-const BASE_URL = 'wss://stream.binance.com:9443/ws';
 
 interface Trade {
   price: string;
@@ -18,7 +17,7 @@ export default function TradingList({ symbol }: { symbol: string }) {
   useEffect(() => {
     const lowerSymbol = symbol.toLowerCase();
 
-    const socket = new WebSocket(`${BASE_URL}/${lowerSymbol}@trade`);
+    const socket = new WebSocket(`${BASE_WS_URL}/${lowerSymbol}@trade`);
 
     socket.onopen = () => {
       console.log('WebSocket 연결');

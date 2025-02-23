@@ -5,14 +5,10 @@ import SymbolListItem from './symbolListItem';
 import { useEffect, useState } from 'react';
 import SymbolSearchBar from './symbolSearchBar';
 import Dropdown from '@/components/dropdown';
+import { BASE_URL } from '@/lib/constance';
+import { SORT_MENU } from '@/lib/menu';
 
 const DEFAULT_CURRENCY = 'USDT';
-
-const SORT_MENU = [
-  { name: '가격내림차순', value: 'priceDes' },
-  { name: '가격오름차순', value: 'priceAsc' },
-  { name: '거래량순', value: 'volume' },
-];
 
 export default function SymbolList() {
   const [keyword, setKeyword] = useState('');
@@ -30,7 +26,7 @@ export default function SymbolList() {
   const fetchSymbolList = async () => {
     try {
       const data = await fetch(
-        `http://localhost:3000/api/totalList?sortBy=${sortBy}&currency=${DEFAULT_CURRENCY}`
+        `${BASE_URL}/totalList?sortBy=${sortBy}&currency=${DEFAULT_CURRENCY}`
       );
       const result: SymbolData[] = await data.json();
       setOrderData([...result]);

@@ -7,6 +7,7 @@ import { numberWithUnit } from '@/utils/numberWithUnit';
 import IntervalMenu from './intervalMenu';
 import { useInfiniteQuery } from '@tanstack/react-query';
 import { fetchChartData } from '@/app/api/chart/helper';
+import { DEFAULT_STALE_TIME, LIMIT } from '@/lib/constance';
 
 interface Props {
   symbol: string;
@@ -16,9 +17,6 @@ type HoverData = {
   candle: Candle;
   line: Volume;
 };
-
-const DEFAULT_STALE_TIME = 3 * 60 * 1000; // 캐싱 유지 3분
-const LIMIT = 200; // 데이터 갯수
 
 export default function Chart({ symbol }: Props) {
   const chartRef = useRef<HTMLDivElement>(null);

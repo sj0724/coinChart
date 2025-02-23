@@ -1,3 +1,4 @@
+import { BASE_URL } from '@/lib/constance';
 import { SymbolData } from '@/types/binance';
 import { formatNumber } from '@/utils/formatNumber';
 
@@ -6,7 +7,7 @@ interface Props {
 }
 
 export default async function SymbolInfo({ name }: Props) {
-  const data = await fetch(`http://localhost:3000/api/detail?name=${name}`);
+  const data = await fetch(`${BASE_URL}/detail?name=${name}`);
   const result: SymbolData = await data.json();
   return (
     <div className='h-16 p-4 flex items-center justify-between gap-3 border rounded-md w-full'>

@@ -1,3 +1,5 @@
+import { BASE_BINANCE_URL } from '@/lib/constance';
+
 export async function GET(req: Request) {
   try {
     const url = new URL(req.url);
@@ -6,7 +8,7 @@ export async function GET(req: Request) {
     const endTime = url.searchParams.get('endTime');
     const interval = url.searchParams.get('interval') || '1w';
 
-    const apiUrl = new URL('https://api.binance.com/api/v3/klines');
+    const apiUrl = new URL(`${BASE_BINANCE_URL}/klines`);
     apiUrl.searchParams.append('symbol', symbolName);
     apiUrl.searchParams.append('interval', interval);
     apiUrl.searchParams.append('limit', limit);

@@ -1,3 +1,5 @@
+import { BASE_URL } from '@/lib/constance';
+
 export const fetchChartData = async (
   chartInterval: string,
   symbol: string,
@@ -8,13 +10,13 @@ export const fetchChartData = async (
   if (time) {
     const endTime = Number(time) * 1000;
     const data = await fetch(
-      `http://localhost:3000/api/chart?name=${symbol}&endTime=${endTime}&interval=${chartInterval}&limit=${limit}`
+      `${BASE_URL}/chart?name=${symbol}&endTime=${endTime}&interval=${chartInterval}&limit=${limit}`
     );
     const result = await data.json();
     arrData = result;
   } else {
     const data = await fetch(
-      `http://localhost:3000/api/chart?name=${symbol}&interval=${chartInterval}&limit=${limit}`
+      `${BASE_URL}/chart?name=${symbol}&interval=${chartInterval}&limit=${limit}`
     );
     const result = await data.json();
     arrData = result;
