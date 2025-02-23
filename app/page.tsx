@@ -1,7 +1,9 @@
+import Link from 'next/link';
+
 export default function Home() {
   return (
     <>
-      <div>start</div>
+      <Link href='/trade/BTCUSDT'>차트 바로가기</Link>
     </>
   );
 }
