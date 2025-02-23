@@ -1,5 +1,6 @@
 'use client';
 
+import Button from '@/components/button';
 import useCoinStore from '@/store/useCoinStore';
 
 export default function TradingBoard() {
@@ -18,12 +19,7 @@ export default function TradingBoard() {
             <p>{amountAsk || 0}</p>
           </div>
         </div>
-        <button
-          type='button'
-          className='bg-red-500 w-full rounded-md p-1 text-white font-bold hover:bg-red-500/50 active:bg-red-700'
-        >
-          거래하기
-        </button>
+        <Button text='거래하기' type='red' />
       </div>
       <div className='w-1/2 flex flex-col gap-2'>
         <p className='text-lg font-bold'>매수</p>
@@ -37,12 +33,7 @@ export default function TradingBoard() {
             <p>{amountBid || 0}</p>
           </div>
         </div>
-        <button
-          type='button'
-          className='bg-green-500 w-full rounded-md p-1 text-white font-bold hover:bg-green-500/50 active:bg-green-700'
-        >
-          거래하기
-        </button>
+        <Button text='거래하기' type='green' />
       </div>
     </div>
   );
