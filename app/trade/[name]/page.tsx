@@ -4,6 +4,7 @@ import SymbolListContainer from './_components/symbolListContainer';
 import SymbolInfo from './_components/symbolInfo';
 import OrderBookContainer from './_components/orderContainer';
 import Chart from './_components/chart';
+import TradingList from './_components/tradingList';
 
 export default async function Page({
   params,
@@ -18,9 +19,12 @@ export default async function Page({
         <SymbolInfo name={symbolName} />
         <Chart symbol={symbolName} />
       </div>
-      <Suspense fallback={<SymbolListSkeleton />}>
-        <SymbolListContainer />
-      </Suspense>
+      <div className='flex flex-col gap-2'>
+        <Suspense fallback={<SymbolListSkeleton />}>
+          <SymbolListContainer />
+        </Suspense>
+        <TradingList symbol={symbolName} />
+      </div>
     </div>
   );
 }
