@@ -43,7 +43,9 @@ export default function Chart({ symbol }: Props) {
     isEndRef.current = false;
 
     // limit값보다 작으면 추가 데이터 없음
-    if (infiniteData.pages[infiniteData.pages.length - 1].candle.length < 200) {
+    if (
+      infiniteData.pages[infiniteData.pages.length - 1].candle.length < LIMIT
+    ) {
       isEndRef.current = true;
     }
 
