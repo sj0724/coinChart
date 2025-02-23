@@ -5,6 +5,8 @@ import { createChart, CandlestickSeries, LineSeries } from 'lightweight-charts';
 import { Candle, Volume } from '@/types/chart';
 import { numberWithUnit } from '@/utils/numberWithUnit';
 import IntervalMenu from './intervalMenu';
+import { useInfiniteQuery } from '@tanstack/react-query';
+import { fetchChartData } from '@/app/api/chart/helper';
 
 interface Props {
   symbol: string;
@@ -15,10 +17,13 @@ type HoverData = {
   line: Volume;
 };
 
+const DEFAULT_STALE_TIME = 3 * 60 * 1000; // 캐싱 유지 3분
+const LIMIT = 200; // 데이터 갯수
+
 export default function Chart({ symbol }: Props) {
   const chartRef = useRef<HTMLDivElement>(null);
   const [hoverData, setHoverData] = useState<HoverData | null>(null);
-  const endTimeRef = useRef<number | null>(null);
+  const isEndRef = useRef(false);
   const isLoadingRef = useRef(false);
   const [chartInterval, setChartInterval] = useState('1w');
 
@@ -26,37 +31,30 @@ export default function Chart({ symbol }: Props) {
     setChartInterval(value);
   };
 
-  const fetchNewChartData = async () => {
-    isLoadingRef.current = true;
-    const endTime = endTimeRef.current ? endTimeRef.current * 1000 : '';
-    const data = await fetch(
-      `http://localhost:3000/api/chart?name=${symbol}&endTime=${endTime}&interval=${chartInterval}`
-    );
-    const result = await data.json();
-    const newCandle = result.map((candle: any) => ({
-      time: candle[0] / 1000, // UNIX timestamp (초 단위)
-      open: parseFloat(candle[1]),
-      high: parseFloat(candle[2]),
-      low: parseFloat(candle[3]),
-      close: parseFloat(candle[4]),
-    }));
-    const newHistogram = result.map((histogram: any) => ({
-      time: histogram[0] / 1000,
-      value: parseFloat(histogram[5]),
-    }));
-    endTimeRef.current = newCandle[0].time as number;
-    return { candle: newCandle, histogram: newHistogram };
-  };
+  const { data: infiniteData, fetchNextPage } = useInfiniteQuery({
+    queryKey: ['chart', symbol, chartInterval],
+    queryFn: ({ pageParam }: { pageParam?: string | null }) =>
+      fetchChartData(chartInterval, symbol, LIMIT, pageParam),
+    staleTime: DEFAULT_STALE_TIME,
+    initialPageParam: null,
+    getNextPageParam: (lastPage) => lastPage?.candle?.[0]?.time ?? undefined,
+  });
 
   useEffect(() => {
-    if (!chartRef.current) return;
+    if (!chartRef.current || !infiniteData) return;
+    isEndRef.current = false;
+
+    // limit값보다 작으면 추가 데이터 없음
+    if (infiniteData.pages[infiniteData.pages.length - 1].candle.length < 200) {
+      isEndRef.current = true;
+    }
 
     const chart = createChart(chartRef.current, {
       width: 750,
       height: 500,
       layout: {
         background: { color: 'white' },
-        textColor: '#333',
+        textColor: 'black',
       },
       timeScale: {
         timeVisible: true,
@@ -70,29 +68,25 @@ export default function Chart({ symbol }: Props) {
       priceScaleId: '',
       lineWidth: 2,
     });
+    const allCandles = infiniteData.pages
+      .flatMap((page) => page.candle)
+      .sort((a, b) => a.time - b.time)
+      .filter((value, index, self) => {
+        return index === 0 || value.time !== self[index - 1].time;
+      });
 
-    const fetchChartData = async () => {
-      const data = await fetch(
-        `http://localhost:3000/api/chart?name=${symbol}&interval=${chartInterval}`
-      );
-      const result = await data.json();
-
-      const formattedCandleData: Candle[] = result.map((candle: any) => ({
-        time: candle[0] / 1000, // UNIX timestamp (초 단위)
-        open: parseFloat(candle[1]),
-        high: parseFloat(candle[2]),
-        low: parseFloat(candle[3]),
-        close: parseFloat(candle[4]),
-      }));
-      const formattedLineData = result.map((line: any) => ({
-        time: line[0] / 1000,
-        value: parseFloat(line[5]),
-      }));
-
-      candleSeries.setData(formattedCandleData);
-      lineSeries.setData(formattedLineData);
-      endTimeRef.current = formattedCandleData[0].time as number;
-    };
+    const allHistograms = infiniteData.pages
+      .flatMap((page) => page.histogram)
+      .sort((a, b) => a.time - b.time)
+      .filter((value, index, self) => {
+        return index === 0 || value.time !== self[index - 1].time;
+      });
+    if (allCandles.length > 0) {
+      candleSeries.setData(allCandles);
+    }
+    if (allHistograms.length > 0) {
+      lineSeries.setData(allHistograms);
+    }
 
     chart.subscribeCrosshairMove((param) => {
       const candleData = param.seriesData.get(candleSeries);
@@ -106,49 +100,22 @@ export default function Chart({ symbol }: Props) {
     });
 
     chart.timeScale().subscribeVisibleTimeRangeChange(async (timeRange) => {
-      if (!timeRange || !endTimeRef.current || isLoadingRef.current) return;
+      if (!timeRange || isLoadingRef.current || isEndRef.current) return;
 
-      if (Number(timeRange.from) <= endTimeRef.current) {
-        const result = await fetchNewChartData();
+      const lastFetchedTime =
+        infiniteData?.pages?.at(-1)?.candle?.[0]?.time || 0;
 
-        if (result.candle.length > 1) {
-          const oldCandleData = candleSeries.data(); // 기존 데이터 가져오기
-          const oldLineData = lineSeries.data();
-          // 기존 데이터의 time 값들을 Set에 저장
-          const existingTimes = new Set(oldCandleData.map((c) => c.time));
-
-          // 기존 데이터와 중복되지 않는 새 데이터만 추가
-          const filteredNewCandles = result.candle.filter(
-            (c: any) => !existingTimes.has(c.time)
-          );
-          const filteredNewHistograms = result.histogram.filter(
-            (c: any) => !existingTimes.has(c.time)
-          );
-          // 시간 정렬
-          const sortedCandleData = [
-            ...filteredNewCandles,
-            ...oldCandleData,
-          ].sort((a, b) => a.time - b.time);
-          const sortedLineData = [
-            ...filteredNewHistograms,
-            ...oldLineData,
-          ].sort((a, b) => a.time - b.time);
-
-          candleSeries.setData(sortedCandleData);
-          lineSeries.setData(sortedLineData);
-          endTimeRef.current = sortedCandleData[0].time;
-          isLoadingRef.current = false;
-        } else {
-          endTimeRef.current = null;
-        }
+      if (Number(timeRange.from) <= lastFetchedTime) {
+        isLoadingRef.current = true;
+        await fetchNextPage();
+        isLoadingRef.current = false;
       }
     });
-    fetchChartData();
 
     return () => {
       chart.remove();
     };
-  }, [chartInterval]);
+  }, [infiniteData]);
 
   return (
     <>
