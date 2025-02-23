@@ -11,6 +11,7 @@ export async function GET(req: Request) {
     const data = await response.json();
 
     // 특정 통화 필터링
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const filteredData: SymbolData[] = data.filter((item: any) =>
       currencyFilter ? item.symbol.includes(currencyFilter) : true
     );

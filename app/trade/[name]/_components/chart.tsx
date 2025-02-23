@@ -115,7 +115,7 @@ export default function Chart({ symbol }: Props) {
     return () => {
       chart.remove();
     };
-  }, [infiniteData]);
+  }, [infiniteData, fetchNextPage]);
 
   return (
     <>

@@ -1,7 +1,7 @@
 'use client';
 
 import { formatNumber } from '@/utils/formatNumber';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 
 const BASE_URL = 'wss://stream.binance.com:9443/ws';
 

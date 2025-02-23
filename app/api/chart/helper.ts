@@ -19,6 +19,8 @@ export const fetchChartData = async (
     const result = await data.json();
     arrData = result;
   }
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const newCandle = arrData.map((candle: any) => ({
     time: candle[0] / 1000,
     open: parseFloat(candle[1]),
@@ -27,6 +29,7 @@ export const fetchChartData = async (
     close: parseFloat(candle[4]),
   }));
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const newHistogram = arrData.map((histogram: any) => ({
     time: histogram[0] / 1000,
     value: parseFloat(histogram[5]),
