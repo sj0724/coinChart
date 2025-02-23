@@ -11,22 +11,22 @@ export async function GET(req: Request) {
     const data = await response.json();
 
     // 특정 통화 필터링
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const filteredData: SymbolData[] = data.filter((item: any) =>
+    const filteredData: SymbolData[] = data.filter((item: SymbolData) =>
       currencyFilter ? item.symbol.includes(currencyFilter) : true
     );
 
-    const sortedData = filteredData
-      .sort((a, b) => {
-        if (sortBy === 'price') {
-          // 가격 내림차순 정렬
-          return parseFloat(b.lastPrice) - parseFloat(a.lastPrice);
-        } else {
-          // 거래량 내림차순 정렬
-          return parseFloat(b.quoteVolume) - parseFloat(a.quoteVolume);
-        }
-      })
-      .slice(0, 199); //200개만 사용
+    const sortedData = filteredData.sort((a, b) => {
+      if (sortBy === 'priceDes') {
+        // 가격 내림차순 정렬
+        return parseFloat(b.lastPrice) - parseFloat(a.lastPrice);
+      } else if (sortBy === 'priceAsc') {
+        // 가격 오림차순 정렬
+        return parseFloat(a.lastPrice) - parseFloat(b.lastPrice);
+      } else {
+        // 거래량 내림차순 정렬
+        return parseFloat(b.quoteVolume) - parseFloat(a.quoteVolume);
+      }
+    });
 
     return Response.json(sortedData, { status: 200 });
   } catch (error) {
