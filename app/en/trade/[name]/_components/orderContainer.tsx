@@ -76,7 +76,7 @@ export default function OrderBookContainer({ name }: Props) {
         {askList.map((item, index) => (
           <li
             key={index}
-            className='flex text-xs justify-between hover:bg-gray-100 cursor-pointer'
+            className='relative flex text-xs justify-between hover:bg-gray-100 cursor-pointer'
             onClick={() => test(index)}
           >
             <p className='w-1/3 text-red-600'>{Number(item[0]).toFixed(2)}</p>
@@ -84,6 +84,13 @@ export default function OrderBookContainer({ name }: Props) {
             <p className='w-1/3 text-end'>
               {numberWithUnit(Number(item[0]) * Number(item[1]))}
             </p>
+            <div
+              className='absolute right-0 bg-red-500 opacity-10 h-full'
+              style={{
+                width: `${Number(item[1]) * 100}%`,
+                maxWidth: '100%',
+              }}
+            />
           </li>
         ))}
       </ul>
@@ -91,7 +98,7 @@ export default function OrderBookContainer({ name }: Props) {
         {bidList.map((item, index) => (
           <li
             key={index}
-            className='flex text-xs justify-between hover:bg-gray-100 cursor-pointer'
+            className='relative flex text-xs justify-between hover:bg-gray-100 cursor-pointer'
             onClick={() => test2(index)}
           >
             <p className='w-1/3 text-green-500'>{Number(item[0]).toFixed(2)}</p>
@@ -99,6 +106,13 @@ export default function OrderBookContainer({ name }: Props) {
             <p className='w-1/3 text-end'>
               {numberWithUnit(Number(item[0]) * Number(item[1]))}
             </p>
+            <div
+              className='absolute right-0 bg-green-500 opacity-10 h-full'
+              style={{
+                width: `${Number(item[1]) * 100}%`,
+                maxWidth: '100%',
+              }}
+            />
           </li>
         ))}
       </ul>
