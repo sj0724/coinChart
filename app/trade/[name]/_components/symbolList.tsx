@@ -27,7 +27,7 @@ export default function SymbolList() {
     setSortBy(value);
   };
 
-  const fetchOrderBook = async () => {
+  const fetchSymbolList = async () => {
     try {
       const data = await fetch(
         `http://localhost:3000/api/totalList?sortBy=${sortBy}&currency=${DEFAULT_CURRENCY}`
@@ -40,11 +40,11 @@ export default function SymbolList() {
   };
 
   useEffect(() => {
-    fetchOrderBook();
-    const intervalId = setInterval(fetchOrderBook, 5000); // 5초마다 데이터 갱신
+    fetchSymbolList();
+    const intervalId = setInterval(fetchSymbolList, 5000); // 5초마다 데이터 갱신
 
     return () => clearInterval(intervalId);
-  }, [sortBy]);
+  }, [sortBy, fetchSymbolList]);
 
   if (!symbolData) {
     return <div className='border rounded-md p-3 h-[400px] w-[300px]'></div>;
