@@ -4,31 +4,40 @@ import { useEffect, useState } from 'react';
 import { Order } from '@/types/binance';
 import { numberWithUnit } from '@/utils/numberWithUnit';
 import useCoinStore from '@/store/useCoinStore';
-import { BASE_URL } from '@/lib/constance';
+import { BASE_WS_URL } from '@/lib/constance';
 
 interface Props {
   symbol: string;
 }
 
+type OrderListType = {
+  asks: string[];
+  bids: string[];
+};
+
 export default function OrderBookContainer({ symbol }: Props) {
-  const [orderData, setOrderData] = useState<Order | null>(null);
+  const [orderData, setOrderData] = useState<OrderListType | null>(null);
   const { setPrice, setAmountBid, setAmountAsk } = useCoinStore();
 
-  const fetchOrderBook = async () => {
-    try {
-      const data = await fetch(`${BASE_URL}/order?name=${symbol}`);
-      const result: Order = await data.json();
-      setOrderData(result);
-    } catch (error) {
-      console.error('Error fetching order book:', error);
-    }
-  };
-
   useEffect(() => {
-    fetchOrderBook();
-    const intervalId = setInterval(fetchOrderBook, 5000); // 5초마다 데이터 갱신
+    const lowerSymbol = symbol.toLowerCase();
+    const socket = new WebSocket(`${BASE_WS_URL}/${lowerSymbol}@depth20`);
 
-    return () => clearInterval(intervalId);
+    socket.onmessage = (event) => {
+      const data: Order = JSON.parse(event.data);
+      console.log(data);
+      setOrderData({ asks: data.asks, bids: data.bids });
+    };
+
+    socket.onerror = (error) => {
+      console.error('WebSocket 오류:', error);
+    };
+
+    return () => {
+      if (socket && socket.readyState === WebSocket.OPEN) {
+        socket.close();
+      }
+    };
   }, [symbol]);
 
   if (!orderData) {
@@ -54,7 +63,7 @@ export default function OrderBookContainer({ symbol }: Props) {
 
   const settingBidState = (index: number) => {
     const newPrice = Number(bidList[index][0]);
-    const newArr = bidList.slice(0, index); // askList의 index부터 끝까지 자른 배열
+    const newArr = bidList.slice(0, index); // bidList의 index부터 끝까지 자른 배열
     const totalVolume = newArr
       .map((item) => item[1]) // item[1]을 추출하여 새로운 배열을 생성
       .reduce((acc, volume) => acc + Number(volume), 0); // 배열의 모든 값을 더함
