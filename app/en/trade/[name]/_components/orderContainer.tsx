@@ -25,7 +25,6 @@ export default function OrderBookContainer({ symbol }: Props) {
 
     socket.onmessage = (event) => {
       const data: Order = JSON.parse(event.data);
-      console.log(data);
       setOrderData({ asks: data.asks, bids: data.bids });
     };
 
