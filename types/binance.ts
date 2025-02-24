@@ -53,3 +53,15 @@ export type SymbolDataByWS = {
   L: number; // Last trade ID
   n: number; // Total number of trades
 };
+
+export type TradeDataByWS = {
+  e: 'trade'; // Event type
+  E: number; // Event time (Unix timestamp in milliseconds)
+  s: string; // Symbol (e.g., "BNBBTC")
+  t: number; // Trade ID
+  p: string; // Price
+  q: string; // Quantity
+  T: number; // Trade time (Unix timestamp in milliseconds)
+  m: boolean; // Is the buyer the market maker?
+  M: boolean; // Ignore
+};
