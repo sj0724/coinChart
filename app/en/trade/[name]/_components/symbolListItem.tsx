@@ -11,7 +11,7 @@ interface Props {
 export default function SymbolListItem({ symbol }: Props) {
   const isPlus = Number(symbol.priceChangePercent) > 0;
   return (
-    <Link href={`/trade/${symbol.symbol}`}>
+    <Link href={`/en/trade/${symbol.symbol}`}>
       <div className='py-2 px-3 flex justify-between hover:bg-gray-100 text-sm'>
         <p>{symbol.symbol}</p>
         <div className='flex gap-5 text-center items-center'>

@@ -19,10 +19,6 @@ export default function TradingList({ symbol }: { symbol: string }) {
 
     const socket = new WebSocket(`${BASE_WS_URL}/${lowerSymbol}@trade`);
 
-    socket.onopen = () => {
-      console.log('WebSocket 연결');
-    };
-
     socket.onmessage = (event) => {
       const data = JSON.parse(event.data);
 
@@ -34,10 +30,6 @@ export default function TradingList({ symbol }: { symbol: string }) {
 
     socket.onerror = (error) => {
       console.error('WebSocket 오류:', error);
-    };
-
-    socket.onclose = () => {
-      console.log('WebSocket 연결 종료');
     };
 
     return () => {
