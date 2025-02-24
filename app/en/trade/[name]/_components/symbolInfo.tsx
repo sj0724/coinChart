@@ -32,7 +32,7 @@ export default function SymbolInfo({ symbol }: Props) {
         socket.close();
       }
     };
-  }, [name]);
+  }, [symbol]);
 
   return (
     <div className='h-16 p-4 flex items-center justify-between gap-3 border rounded-md w-full'>
