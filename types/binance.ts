@@ -65,3 +65,50 @@ export type TradeDataByWS = {
   m: boolean; // Is the buyer the market maker?
   M: boolean; // Ignore
 };
+
+interface RateLimit {
+  rateLimitType?: string;
+  interval?: string;
+  intervalNum?: number;
+  limit?: number;
+}
+
+interface SymbolInfo {
+  symbol: string;
+  status: string;
+  baseAsset: string;
+  baseAssetPrecision: number;
+  quoteAsset: string;
+  quotePrecision?: number; // Deprecated in future API versions
+  quoteAssetPrecision: number;
+  baseCommissionPrecision: number;
+  quoteCommissionPrecision: number;
+  orderTypes: string[];
+  icebergAllowed: boolean;
+  ocoAllowed: boolean;
+  otoAllowed: boolean;
+  quoteOrderQtyMarketAllowed: boolean;
+  allowTrailingStop: boolean;
+  cancelReplaceAllowed: boolean;
+  isSpotTradingAllowed: boolean;
+  isMarginTradingAllowed: boolean;
+  filters: any[]; // Filters are optional and can have different structures
+  permissions: string[];
+  permissionSets: string[][];
+  defaultSelfTradePreventionMode: string;
+  allowedSelfTradePreventionModes: string[];
+}
+
+interface SORInfo {
+  baseAsset: string;
+  symbols: string[];
+}
+
+export interface ExchangeInfo {
+  timezone: string;
+  serverTime: number;
+  rateLimits: RateLimit[];
+  exchangeFilters: any[];
+  symbols: SymbolInfo[];
+  sors?: SORInfo[]; // Optional field for SOR availability
+}
