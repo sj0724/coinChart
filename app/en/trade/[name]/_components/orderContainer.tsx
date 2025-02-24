@@ -40,7 +40,7 @@ export default function OrderBookContainer({ symbol }: Props) {
     : [];
   const bidList = Array.isArray(orderData?.bids) ? orderData.bids : [];
 
-  const test = (index: number) => {
+  const settingAskState = (index: number) => {
     const newPrice = Number(askList[index][0]);
     const newArr = askList.slice(index); // askList의 index부터 끝까지 자른 배열
     const totalVolume = newArr
@@ -52,7 +52,7 @@ export default function OrderBookContainer({ symbol }: Props) {
     setAmountAsk('');
   };
 
-  const test2 = (index: number) => {
+  const settingBidState = (index: number) => {
     const newPrice = Number(bidList[index][0]);
     const newArr = bidList.slice(0, index); // askList의 index부터 끝까지 자른 배열
     const totalVolume = newArr
@@ -77,7 +77,7 @@ export default function OrderBookContainer({ symbol }: Props) {
           <li
             key={index}
             className='relative flex text-xs justify-between hover:bg-gray-100 cursor-pointer'
-            onClick={() => test(index)}
+            onClick={() => settingAskState(index)}
           >
             <p className='w-1/3 text-red-600'>{Number(item[0]).toFixed(2)}</p>
             <p className='w-1/3 text-end'>{Number(item[1]).toFixed(5)}</p>
@@ -99,7 +99,7 @@ export default function OrderBookContainer({ symbol }: Props) {
           <li
             key={index}
             className='relative flex text-xs justify-between hover:bg-gray-100 cursor-pointer'
-            onClick={() => test2(index)}
+            onClick={() => settingBidState(index)}
           >
             <p className='w-1/3 text-green-500'>{Number(item[0]).toFixed(2)}</p>
             <p className='w-1/3 text-end'>{Number(item[1]).toFixed(5)}</p>

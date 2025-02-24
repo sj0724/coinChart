@@ -41,7 +41,7 @@ export async function GET(req: Request) {
           const res = await response.json();
           results.push(...res);
         } catch (err) {
-          console.error('URL 변환 중 오류가 발생했습니다.');
+          console.error('URL 변환 중 오류가 발생했습니다.', err);
         }
       })
     );
