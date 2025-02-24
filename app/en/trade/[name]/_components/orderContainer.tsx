@@ -7,16 +7,16 @@ import useCoinStore from '@/store/useCoinStore';
 import { BASE_URL } from '@/lib/constance';
 
 interface Props {
-  name: string;
+  symbol: string;
 }
 
-export default function OrderBookContainer({ name }: Props) {
+export default function OrderBookContainer({ symbol }: Props) {
   const [orderData, setOrderData] = useState<Order | null>(null);
   const { setPrice, setAmountBid, setAmountAsk } = useCoinStore();
 
   const fetchOrderBook = async () => {
     try {
-      const data = await fetch(`${BASE_URL}/order?name=${name}`);
+      const data = await fetch(`${BASE_URL}/order?name=${symbol}`);
       const result: Order = await data.json();
       setOrderData(result);
     } catch (error) {

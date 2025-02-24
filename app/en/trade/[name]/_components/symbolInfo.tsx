@@ -7,14 +7,14 @@ import { formatNumber } from '@/utils/formatNumber';
 import { useEffect, useState } from 'react';
 
 interface Props {
-  name: string;
+  symbol: string;
 }
 
-export default function SymbolInfo({ name }: Props) {
+export default function SymbolInfo({ symbol }: Props) {
   const [detail, setDetail] = useState<SymbolDataByWS | null>(null);
   const { status } = useCoinStatusStore();
   useEffect(() => {
-    const lowerSymbol = name.toLowerCase();
+    const lowerSymbol = symbol.toLowerCase();
 
     const socket = new WebSocket(`${BASE_WS_URL}/${lowerSymbol}@ticker`);
 
@@ -41,7 +41,7 @@ export default function SymbolInfo({ name }: Props) {
       ) : (
         <>
           <div className='flex gap-2'>
-            <p className='text-xl font-semibold'>{name}</p>
+            <p className='text-xl font-semibold'>{symbol}</p>
             <p
               className={`text-xl font-semibold ${
                 status ? 'text-red-500' : 'text-green-500'

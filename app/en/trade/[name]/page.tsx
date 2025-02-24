@@ -13,9 +13,9 @@ export default async function Page({
   const symbolName = (await params).name;
   return (
     <div className='flex w-screen gap-2 justify-center py-2'>
-      <OrderBookContainer name={symbolName} />
+      <OrderBookContainer symbol={symbolName} />
       <div className='flex flex-col gap-2'>
-        <SymbolInfo name={symbolName} />
+        <SymbolInfo symbol={symbolName} />
         <Chart symbol={symbolName} />
         <TradingBoard />
       </div>

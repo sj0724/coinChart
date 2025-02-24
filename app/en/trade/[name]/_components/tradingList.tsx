@@ -2,6 +2,7 @@
 
 import { BASE_WS_URL } from '@/lib/constance';
 import useCoinStatusStore from '@/store/useCoinStatusStore';
+import { TradeDataByWS } from '@/types/binance';
 import { formatNumber } from '@/utils/formatNumber';
 import { useEffect, useState } from 'react';
 
@@ -22,7 +23,7 @@ export default function TradingList({ symbol }: { symbol: string }) {
     const socket = new WebSocket(`${BASE_WS_URL}/${lowerSymbol}@trade`);
 
     socket.onmessage = (event) => {
-      const data = JSON.parse(event.data);
+      const data: TradeDataByWS = JSON.parse(event.data);
 
       setTrades((prevTrades) => [
         { price: data.p, qty: data.q, time: data.T, type: data.m },
