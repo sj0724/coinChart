@@ -1,6 +1,7 @@
 'use client';
 
 import { BASE_WS_URL } from '@/lib/constance';
+import useCoinStatusStore from '@/store/useCoinStatusStore';
 import { formatNumber } from '@/utils/formatNumber';
 import { useEffect, useState } from 'react';
 
@@ -13,6 +14,7 @@ interface Trade {
 
 export default function TradingList({ symbol }: { symbol: string }) {
   const [trades, setTrades] = useState<Trade[]>([]);
+  const { setStatus } = useCoinStatusStore();
 
   useEffect(() => {
     const lowerSymbol = symbol.toLowerCase();
@@ -26,6 +28,7 @@ export default function TradingList({ symbol }: { symbol: string }) {
         { price: data.p, qty: data.q, time: data.T, type: data.m },
         ...prevTrades.slice(0, 29),
       ]);
+      setStatus(data.m);
     };
 
     socket.onerror = (error) => {

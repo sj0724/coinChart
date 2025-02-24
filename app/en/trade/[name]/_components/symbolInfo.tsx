@@ -1,6 +1,7 @@
 'use client';
 
 import { BASE_WS_URL } from '@/lib/constance';
+import useCoinStatusStore from '@/store/useCoinStatusStore';
 import { SymbolDataByWS } from '@/types/binance';
 import { formatNumber } from '@/utils/formatNumber';
 import { useEffect, useState } from 'react';
@@ -11,6 +12,7 @@ interface Props {
 
 export default function SymbolInfo({ name }: Props) {
   const [detail, setDetail] = useState<SymbolDataByWS | null>(null);
+  const { status } = useCoinStatusStore();
   useEffect(() => {
     const lowerSymbol = name.toLowerCase();
 
@@ -40,7 +42,13 @@ export default function SymbolInfo({ name }: Props) {
         <>
           <div className='flex gap-2'>
             <p className='text-xl font-semibold'>{name}</p>
-            <p className='text-xl font-semibold'>{formatNumber(detail?.c)}</p>
+            <p
+              className={`text-xl font-semibold ${
+                status ? 'text-red-500' : 'text-green-500'
+              }`}
+            >
+              {formatNumber(detail?.c)}
+            </p>
           </div>
           <div className='flex gap-4'>
             <div className='flex flex-col text-xs w-20'>
