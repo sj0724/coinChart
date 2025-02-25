@@ -1,4 +1,5 @@
 # Coin Chart
+![스크린샷 2025-02-25 오전 10 31 17](https://github.com/user-attachments/assets/b8d4fe0a-f91c-4ab0-9a69-d334c976a430)
 - 소개 : Binance API과 Lightweight Charts를 활용한 가상 화폐 차트 
 
 ## 목표
