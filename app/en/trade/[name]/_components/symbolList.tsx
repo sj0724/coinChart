@@ -4,20 +4,21 @@ import { SymbolData } from '@/types/binance';
 import SymbolListItem from './symbolListItem';
 import { useEffect, useState } from 'react';
 import SymbolSearchBar from './symbolSearchBar';
-import Dropdown from '@/components/dropdown';
+import SymbolSortDropdown from '@/app/en/trade/[name]/_components/symbolSortDropdown';
 import { SORT_MENU } from '@/lib/menu';
 import { fetchSymbolList } from '@/app/api/totalList/helper';
+import { SORT_OPTIONS } from '@/types/sort';
 
 export default function SymbolList() {
   const [keyword, setKeyword] = useState('');
   const [symbolData, setOrderData] = useState<SymbolData[] | null>(null);
-  const [sortBy, setSortBy] = useState('priceDes');
+  const [sortBy, setSortBy] = useState<SORT_OPTIONS>('priceDes');
 
   const changeKeyword = (value: string) => {
     setKeyword(value);
   };
 
-  const changeSortBy = (value: string) => {
+  const changeSortBy = (value: SORT_OPTIONS) => {
     setSortBy(value);
   };
 
@@ -49,7 +50,11 @@ export default function SymbolList() {
         <SymbolSearchBar onChange={changeKeyword} />
         <div className='flex justify-between'>
           <p>USDT</p>
-          <Dropdown list={SORT_MENU} value={sortBy} onClick={changeSortBy} />
+          <SymbolSortDropdown
+            list={SORT_MENU}
+            value={sortBy}
+            onClick={changeSortBy}
+          />
         </div>
       </div>
       <ul className='flex flex-col'>

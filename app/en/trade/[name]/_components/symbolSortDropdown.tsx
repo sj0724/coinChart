@@ -1,19 +1,20 @@
 'use client';
 
+import { SORT_OPTIONS } from '@/types/sort';
 import { useEffect, useRef, useState } from 'react';
 
 type DropdownItme = {
   name: string;
-  value: string;
+  value: SORT_OPTIONS;
 };
 
 interface Props {
-  onClick: (value: string) => void;
+  onClick: (value: SORT_OPTIONS) => void;
   list: DropdownItme[];
   value: string;
 }
 
-export default function Dropdown({ list, value, onClick }: Props) {
+export default function SymbolSortDropdown({ list, value, onClick }: Props) {
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
