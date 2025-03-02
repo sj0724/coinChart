@@ -5,10 +5,8 @@ import SymbolListItem from './symbolListItem';
 import { useEffect, useState } from 'react';
 import SymbolSearchBar from './symbolSearchBar';
 import Dropdown from '@/components/dropdown';
-import { BASE_URL } from '@/lib/constance';
 import { SORT_MENU } from '@/lib/menu';
-
-const DEFAULT_CURRENCY = 'USDT';
+import { fetchSymbolList } from '@/app/api/totalList/helper';
 
 export default function SymbolList() {
   const [keyword, setKeyword] = useState('');
@@ -23,21 +21,16 @@ export default function SymbolList() {
     setSortBy(value);
   };
 
-  const fetchSymbolList = async () => {
-    try {
-      const data = await fetch(
-        `${BASE_URL}/totalList?sortBy=${sortBy}&currency=${DEFAULT_CURRENCY}`
-      );
-      const result: SymbolData[] = await data.json();
-      setOrderData([...result]);
-    } catch (error) {
-      console.error('Error fetching order book:', error);
+  const settingOrderList = async () => {
+    const data = await fetchSymbolList(sortBy, 'USDT');
+    if (data) {
+      setOrderData([...data]);
     }
   };
 
   useEffect(() => {
-    fetchSymbolList();
-    const intervalId = setInterval(fetchSymbolList, 5000); // 5초마다 데이터 갱신
+    settingOrderList();
+    const intervalId = setInterval(settingOrderList, 5000); // 5초마다 데이터 갱신
 
     return () => clearInterval(intervalId);
   }, [sortBy]);

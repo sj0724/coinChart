@@ -1,4 +1,4 @@
-import { BASE_URL } from '@/lib/constance';
+import { BASE_BINANCE_URL } from '@/lib/constance';
 
 export const fetchChartData = async (
   chartInterval: string,
@@ -6,24 +6,20 @@ export const fetchChartData = async (
   limit: number,
   time?: string | null
 ) => {
-  let arrData;
+  const apiUrl = new URL(`${BASE_BINANCE_URL}/klines`);
+  apiUrl.searchParams.append('symbol', symbol);
+  apiUrl.searchParams.append('interval', chartInterval);
+  apiUrl.searchParams.append('limit', String(limit));
+
   if (time) {
     const endTime = Number(time) * 1000;
-    const data = await fetch(
-      `${BASE_URL}/chart?name=${symbol}&endTime=${endTime}&interval=${chartInterval}&limit=${limit}`
-    );
-    const result = await data.json();
-    arrData = result;
-  } else {
-    const data = await fetch(
-      `${BASE_URL}/chart?name=${symbol}&interval=${chartInterval}&limit=${limit}`
-    );
-    const result = await data.json();
-    arrData = result;
+    apiUrl.searchParams.append('endTime', String(endTime));
   }
+  const response = await fetch(apiUrl.toString());
+  const data = await response.json();
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const newCandle = arrData.map((candle: any) => ({
+  const newCandle = data.map((candle: any) => ({
     time: candle[0] / 1000,
     open: parseFloat(candle[1]),
     high: parseFloat(candle[2]),
@@ -32,7 +28,7 @@ export const fetchChartData = async (
   }));
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const newHistogram = arrData.map((histogram: any) => ({
+  const newHistogram = data.map((histogram: any) => ({
     time: histogram[0] / 1000,
     value: parseFloat(histogram[5]),
   }));

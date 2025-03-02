@@ -1,21 +1,16 @@
 import { BASE_BINANCE_URL } from '@/lib/constance';
 import { ExchangeInfo, SymbolData } from '@/types/binance';
 
-export async function GET(req: Request) {
+export const fetchSymbolList = async (sortBy: string, currency: string) => {
   try {
-    const url = new URL(req.url);
-    const sortBy = url.searchParams.get('sortBy') || 'volume'; // 기본값 volume(거래량)
-    const currencyFilter = url.searchParams.get('currency') || ''; // 특정 통화 필터링, 기본값 전체
-
     // 거래중인 자산 조회
     const request = await fetch(
       `${BASE_BINANCE_URL}/exchangeInfo?symbolStatus=TRADING`
     );
     const totalExchange: ExchangeInfo = await request.json();
 
-    // currency 필터링
     const currencyPairs = totalExchange.symbols
-      .filter((s) => s.quoteAsset === currencyFilter)
+      .filter((s) => s.quoteAsset === currency)
       .map((s) => s.symbol);
 
     const batches = []; // symbols 요청을 나눠서 보내기 위한 batch 배열
@@ -59,11 +54,8 @@ export async function GET(req: Request) {
       }
     });
 
-    return Response.json(sortedData, { status: 200 });
+    return sortedData;
   } catch (error) {
-    return Response.json(
-      { message: 'Error fetching data', error: error },
-      { status: 500 }
-    );
+    console.error('Error fetching order book:', error);
   }
-}
+};
