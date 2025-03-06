@@ -1,10 +1,15 @@
 'use client';
 
-import { useBinanceWebSocket } from '@/hooks/useBinanceStream';
+import { useWebSocketStore } from '@/store/useWebsocketStore';
 import { formatNumber } from '@/utils/formatNumber';
+import { useEffect } from 'react';
 
 export default function TradingList({ symbol }: { symbol: string }) {
-  const { aggTradeList } = useBinanceWebSocket(symbol);
+  const { aggTrade, setSymbol } = useWebSocketStore();
+
+  useEffect(() => {
+    setSymbol(symbol);
+  }, []);
 
   return (
     <div className='p-4 border rounded-md h-[405px] overflow-y-scroll'>
@@ -15,7 +20,7 @@ export default function TradingList({ symbol }: { symbol: string }) {
           <p>Amount</p>
           <p>Time</p>
         </li>
-        {aggTradeList.map((trade, index) => (
+        {aggTrade.map((trade, index) => (
           <li
             key={index}
             className='rounded-md text-center flex justify-between'

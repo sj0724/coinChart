@@ -1,52 +1,31 @@
 'use client';
 
-import { useEffect, useState } from 'react';
-import { Order } from '@/types/binance';
 import { numberWithUnit } from '@/utils/numberWithUnit';
 import useCoinStore from '@/store/useCoinStore';
-import { BASE_WS_URL } from '@/lib/constance';
+import { useWebSocketStore } from '@/store/useWebsocketStore';
+import { useEffect } from 'react';
 
 interface Props {
   symbol: string;
 }
 
-type OrderListType = {
-  asks: string[];
-  bids: string[];
-};
-
 export default function OrderBookContainer({ symbol }: Props) {
-  const [orderData, setOrderData] = useState<OrderListType | null>(null);
   const { setPrice, setAmountBid, setAmountAsk } = useCoinStore();
+  const { depthUpdate, setSymbol } = useWebSocketStore();
 
   useEffect(() => {
-    const lowerSymbol = symbol.toLowerCase();
-    const socket = new WebSocket(`${BASE_WS_URL}/${lowerSymbol}@depth20`);
+    setSymbol(symbol);
+  }, []);
 
-    socket.onmessage = (event) => {
-      const data: Order = JSON.parse(event.data);
-      setOrderData({ asks: data.asks, bids: data.bids });
-    };
-
-    socket.onerror = (error) => {
-      console.error('WebSocket 오류:', error);
-    };
-
-    return () => {
-      if (socket && socket.readyState === WebSocket.OPEN) {
-        socket.close();
-      }
-    };
-  }, [symbol]);
-
-  if (!orderData) {
-    return <div className='border rounded-md p-3 w-[300px] h-[700px]'></div>;
-  }
-
-  const askList = Array.isArray(orderData?.asks)
-    ? [...orderData.asks].reverse()
+  const askList = Array.isArray(depthUpdate?.a)
+    ? [...depthUpdate.a]
+        .filter((ask) => ask[1] !== '0.00000000')
+        .slice(0, 19)
+        .reverse()
     : [];
-  const bidList = Array.isArray(orderData?.bids) ? orderData.bids : [];
+  const bidList = Array.isArray(depthUpdate?.b)
+    ? depthUpdate?.b.filter((ask) => ask[1] !== '0.00000000').slice(0, 19)
+    : [];
 
   const settingAskState = (index: number) => {
     const newPrice = Number(askList[index][0]);

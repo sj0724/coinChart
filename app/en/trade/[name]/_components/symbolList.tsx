@@ -1,18 +1,16 @@
 'use client';
 
-import { SymbolData } from '@/types/binance';
 import SymbolListItem from './symbolListItem';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import SymbolSearchBar from './symbolSearchBar';
 import SymbolSortDropdown from '@/app/en/trade/[name]/_components/symbolSortDropdown';
 import { SORT_MENU } from '@/lib/menu';
-import { fetchSymbolList } from '@/app/api/totalList/helper';
 import { SORT_OPTIONS } from '@/types/sort';
+import { useWebSocketStore } from '@/store/useWebsocketStore';
 
 export default function SymbolList() {
   const [keyword, setKeyword] = useState('');
-  const [symbolData, setOrderData] = useState<SymbolData[] | null>(null);
-  const [sortBy, setSortBy] = useState<SORT_OPTIONS>('priceDes');
+  const { miniTicker, setSortBy, sortBy } = useWebSocketStore();
 
   const changeKeyword = (value: string) => {
     setKeyword(value);
@@ -22,26 +20,8 @@ export default function SymbolList() {
     setSortBy(value);
   };
 
-  const settingOrderList = async () => {
-    const data = await fetchSymbolList(sortBy, 'USDT');
-    if (data) {
-      setOrderData([...data]);
-    }
-  };
-
-  useEffect(() => {
-    settingOrderList();
-    const intervalId = setInterval(settingOrderList, 5000); // 5초마다 데이터 갱신
-
-    return () => clearInterval(intervalId);
-  }, [sortBy]);
-
-  if (!symbolData) {
-    return <div className='border rounded-md p-3 h-[400px] w-[300px]'></div>;
-  }
-
-  const filteredList = symbolData.filter((item) =>
-    item.symbol.toLowerCase().includes(keyword.toLowerCase())
+  const filteredList = miniTicker.filter((item) =>
+    item.s.toLowerCase().includes(keyword.toLowerCase())
   );
 
   return (
@@ -59,7 +39,7 @@ export default function SymbolList() {
       </div>
       <ul className='flex flex-col'>
         {filteredList.map((item) => (
-          <li key={item.symbol}>
+          <li key={item.s}>
             <SymbolListItem symbol={item} />
           </li>
         ))}
