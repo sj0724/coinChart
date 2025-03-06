@@ -1,12 +1,12 @@
 import { BASE_WS_URL } from '@/lib/constance';
 import { SORT_OPTIONS } from '@/types/sort';
-import { AggTrade, DepthUpdate, Ticker } from '@/types/streams';
+import { AggTrade, DepthUpdate, Miniticker } from '@/types/streams';
 import { create } from 'zustand';
 
 interface WebSocketStore {
   sortBy: SORT_OPTIONS;
   symbol: string;
-  miniTicker: Ticker[];
+  miniTicker: Miniticker[];
   depthUpdate: DepthUpdate | null;
   aggTrade: AggTrade[];
   setSortBy: (option: SORT_OPTIONS) => void;
@@ -43,7 +43,7 @@ export const useWebSocketStore = create<WebSocketStore>((set, get) => {
           const subscribeMessage = {
             method: 'SUBSCRIBE',
             params: [
-              '!ticker@arr@3000ms',
+              '!miniTicker@arr@3000ms',
               `${smallSymbol}@depth`,
               `${smallSymbol}@aggTrade`,
             ],
@@ -60,25 +60,36 @@ export const useWebSocketStore = create<WebSocketStore>((set, get) => {
           if (
             Array.isArray(data) &&
             data.length > 0 &&
-            data[0].e === '24hrTicker'
+            data[0].e === '24hrMiniTicker'
           ) {
             const currentSortBy = get().sortBy;
+            const existingMiniTicker = get().miniTicker;
 
-            const sortedData = data
-              .filter((symbol) => symbol.s.toLowerCase().endsWith('usdt'))
-              .sort((a, b) => {
+            const tickerMap = new Map(
+              existingMiniTicker.map((item) => [item.s, item])
+            );
+
+            data.forEach((symbol) => {
+              if (symbol.s.toLowerCase().endsWith('usdt')) {
+                tickerMap.set(symbol.s, symbol); // 기존 데이터면 업데이트, 없으면 추가
+              }
+            });
+
+            const updatedMiniTicker = Array.from(tickerMap.values()).sort(
+              (a, b) => {
                 if (currentSortBy === 'priceDes') {
                   // 가격 내림차순 정렬
                   return parseFloat(b.c) - parseFloat(a.c);
                 } else if (currentSortBy === 'priceAsc') {
-                  // 가격 오림차순 정렬
+                  // 가격 오름차순 정렬
                   return parseFloat(a.c) - parseFloat(b.c);
                 } else {
                   // 거래량 내림차순 정렬
                   return parseFloat(b.q) - parseFloat(a.q);
                 }
-              });
-            set({ miniTicker: sortedData });
+              }
+            );
+            set({ miniTicker: updatedMiniTicker });
           } else if (data.e === 'depthUpdate') {
             set({ depthUpdate: data });
           } else if (data.e === 'aggTrade') {
