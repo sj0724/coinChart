@@ -1,11 +1,21 @@
 'use client';
 
+import useCoinStatusStore from '@/store/useCoinStatusStore';
 import { useWebSocketStore } from '@/store/useWebsocketStore';
 import { formatNumber } from '@/utils/formatNumber';
 import { useEffect } from 'react';
 
 export default function TradingList({ symbol }: { symbol: string }) {
   const { aggTrade, setSymbol } = useWebSocketStore();
+  const { setStatus } = useCoinStatusStore();
+
+  useEffect(() => {
+    if (aggTrade[0].m) {
+      setStatus(false);
+    } else {
+      setStatus(true);
+    }
+  }, [aggTrade]);
 
   useEffect(() => {
     setSymbol(symbol);

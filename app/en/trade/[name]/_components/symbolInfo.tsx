@@ -44,7 +44,7 @@ export default function SymbolInfo({ symbol }: Props) {
             <p className='text-xl font-semibold'>{symbol}</p>
             <p
               className={`text-xl font-semibold ${
-                status ? 'text-red-500' : 'text-green-500'
+                status ? 'text-green-500' : 'text-red-500'
               }`}
             >
               {formatNumber(detail?.c)}
