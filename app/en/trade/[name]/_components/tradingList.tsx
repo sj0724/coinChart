@@ -10,7 +10,7 @@ export default function TradingList({ symbol }: { symbol: string }) {
   const { setStatus } = useCoinStatusStore();
 
   useEffect(() => {
-    if (aggTrade[0].m) {
+    if (aggTrade.length > 0 && aggTrade[0].m) {
       setStatus(false);
     } else {
       setStatus(true);
