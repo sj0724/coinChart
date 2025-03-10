@@ -15,11 +15,9 @@ export default function SymbolList() {
     setKeyword(value);
   };
 
-  const filteredList = useMemo(() => {
-    return miniTicker.filter((item) =>
-      item.s.toLowerCase().includes(keyword.toLowerCase())
-    );
-  }, [miniTicker, keyword]);
+  const filteredList = miniTicker.filter((item) =>
+    item.s.toLowerCase().includes(keyword.toLowerCase())
+  );
 
   return (
     <div className='relative rounded-lg border h-[500px] w-[300px] overflow-scroll'>
