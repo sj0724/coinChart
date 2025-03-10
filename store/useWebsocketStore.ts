@@ -1,15 +1,12 @@
 import { BASE_WS_URL } from '@/lib/constance';
-import { SORT_OPTIONS } from '@/types/sort';
 import { AggTrade, DepthUpdate, Miniticker } from '@/types/streams';
 import { create } from 'zustand';
 
 interface WebSocketStore {
-  sortBy: SORT_OPTIONS;
   symbol: string;
   miniTicker: Miniticker[];
   depthUpdate: DepthUpdate | null;
   aggTrade: AggTrade[];
-  setSortBy: (option: SORT_OPTIONS) => void;
   setSymbol: (symbol: string) => void;
   connectWebSocket: () => void;
   disconnectWebSocket: () => void;
@@ -25,7 +22,6 @@ export const useWebSocketStore = create<WebSocketStore>((set, get) => {
       data.length > 0 &&
       data[0].e === '24hrMiniTicker'
     ) {
-      const currentSortBy = get().sortBy;
       const existingMiniTicker = get().miniTicker;
       const tickerMap = new Map(
         existingMiniTicker.map((item) => [item.s, item])
@@ -37,14 +33,7 @@ export const useWebSocketStore = create<WebSocketStore>((set, get) => {
         }
       });
 
-      const updatedMiniTicker = Array.from(tickerMap.values()).sort((a, b) => {
-        if (currentSortBy === 'priceDes')
-          return parseFloat(b.c) - parseFloat(a.c);
-        if (currentSortBy === 'priceAsc')
-          return parseFloat(a.c) - parseFloat(b.c);
-        return parseFloat(b.q) - parseFloat(a.q);
-      });
-      set({ miniTicker: updatedMiniTicker });
+      set({ miniTicker: Array.from(tickerMap.values()) });
     } else if (data.e === 'depthUpdate') {
       set({ depthUpdate: data });
     } else if (data.e === 'aggTrade') {
@@ -89,12 +78,10 @@ export const useWebSocketStore = create<WebSocketStore>((set, get) => {
   };
 
   return {
-    sortBy: 'priceDes',
     symbol: '',
     miniTicker: [],
     depthUpdate: null,
     aggTrade: [],
-    setSortBy: (newSortBy: SORT_OPTIONS) => set({ sortBy: newSortBy }),
     setSymbol: (newSymbol: string) => {
       if (get().symbol !== newSymbol) {
         set({ symbol: newSymbol });

@@ -1,6 +1,5 @@
 'use client';
 
-import { useWebSocketStore } from '@/store/useWebsocketStore';
 import { SORT_OPTIONS } from '@/types/sort';
 import { useEffect, useRef, useState } from 'react';
 
@@ -11,14 +10,18 @@ type DropdownItme = {
 
 interface Props {
   list: DropdownItme[];
+  sortBy: SORT_OPTIONS;
+  setSortBy: (option: SORT_OPTIONS) => void;
 }
 
-export default function SymbolSortDropdown({ list }: Props) {
-  const sortBy = useWebSocketStore((state) => state.sortBy);
-  const setSortBy = useWebSocketStore((state) => state.setSortBy);
-
+export default function SymbolSortDropdown({ list, sortBy, setSortBy }: Props) {
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
+
+  const handleClick = (option: SORT_OPTIONS) => {
+    setSortBy(option);
+    setIsOpen(false);
+  };
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
@@ -48,7 +51,7 @@ export default function SymbolSortDropdown({ list }: Props) {
               <button
                 type='button'
                 className='p-3 w-full hover:bg-gray-100 rounded-md text-nowrap'
-                onClick={() => setSortBy(item.value)}
+                onClick={() => handleClick(item.value)}
               >
                 {item.name}
               </button>
