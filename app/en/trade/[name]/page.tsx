@@ -23,7 +23,7 @@ export default function Page({
 
   return (
     <div className='flex w-screen gap-2 justify-center py-2'>
-      <OrderBookContainer symbol={symbolName} />
+      <OrderBookContainer />
       <div className='flex flex-col gap-2'>
         <SymbolInfo symbol={symbolName} />
         <Chart symbol={symbolName} />

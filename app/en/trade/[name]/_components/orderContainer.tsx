@@ -4,11 +4,7 @@ import { numberWithUnit } from '@/utils/numberWithUnit';
 import useCoinStore from '@/store/useCoinStore';
 import { useWebSocketStore } from '@/store/useWebsocketStore';
 
-interface Props {
-  symbol: string;
-}
-
-export default function OrderBookContainer({ symbol }: Props) {
+export default function OrderBookContainer() {
   const { setPrice, setAmountBid, setAmountAsk } = useCoinStore();
   const depthUpdate = useWebSocketStore((state) => state.depthUpdate);
 
