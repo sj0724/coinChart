@@ -3,7 +3,6 @@
 import { numberWithUnit } from '@/utils/numberWithUnit';
 import useCoinStore from '@/store/useCoinStore';
 import { useWebSocketStore } from '@/store/useWebsocketStore';
-import { useEffect } from 'react';
 
 interface Props {
   symbol: string;
@@ -11,11 +10,7 @@ interface Props {
 
 export default function OrderBookContainer({ symbol }: Props) {
   const { setPrice, setAmountBid, setAmountAsk } = useCoinStore();
-  const { depthUpdate, setSymbol } = useWebSocketStore();
-
-  useEffect(() => {
-    setSymbol(symbol);
-  }, []);
+  const depthUpdate = useWebSocketStore((state) => state.depthUpdate);
 
   const askList = Array.isArray(depthUpdate?.a)
     ? [...depthUpdate.a]

@@ -1,28 +1,25 @@
 'use client';
 
-import SymbolListItem from './symbolListItem';
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import SymbolSearchBar from './symbolSearchBar';
 import SymbolSortDropdown from '@/app/en/trade/[name]/_components/symbolSortDropdown';
 import { SORT_MENU } from '@/lib/menu';
-import { SORT_OPTIONS } from '@/types/sort';
 import { useWebSocketStore } from '@/store/useWebsocketStore';
+import SymbolListItem from './symbolListItem';
 
 export default function SymbolList() {
   const [keyword, setKeyword] = useState('');
-  const { miniTicker, setSortBy, sortBy } = useWebSocketStore();
+  const miniTicker = useWebSocketStore((state) => state.miniTicker);
 
   const changeKeyword = (value: string) => {
     setKeyword(value);
   };
 
-  const changeSortBy = (value: SORT_OPTIONS) => {
-    setSortBy(value);
-  };
-
-  const filteredList = miniTicker.filter((item) =>
-    item.s.toLowerCase().includes(keyword.toLowerCase())
-  );
+  const filteredList = useMemo(() => {
+    return miniTicker.filter((item) =>
+      item.s.toLowerCase().includes(keyword.toLowerCase())
+    );
+  }, [miniTicker, keyword]);
 
   return (
     <div className='relative rounded-lg border h-[500px] w-[300px] overflow-scroll'>
@@ -30,11 +27,7 @@ export default function SymbolList() {
         <SymbolSearchBar onChange={changeKeyword} />
         <div className='flex justify-between'>
           <p>USDT</p>
-          <SymbolSortDropdown
-            list={SORT_MENU}
-            value={sortBy}
-            onClick={changeSortBy}
-          />
+          <SymbolSortDropdown list={SORT_MENU} />
         </div>
       </div>
       <ul className='flex flex-col'>

@@ -6,7 +6,7 @@ import { formatNumber } from '@/utils/formatNumber';
 import { useEffect } from 'react';
 
 export default function TradingList({ symbol }: { symbol: string }) {
-  const { aggTrade, setSymbol } = useWebSocketStore();
+  const aggTrade = useWebSocketStore((state) => state.aggTrade);
   const { setStatus } = useCoinStatusStore();
 
   useEffect(() => {
@@ -16,10 +16,6 @@ export default function TradingList({ symbol }: { symbol: string }) {
       setStatus(true);
     }
   }, [aggTrade]);
-
-  useEffect(() => {
-    setSymbol(symbol);
-  }, []);
 
   return (
     <div className='p-4 border rounded-md h-[405px] overflow-y-scroll'>
