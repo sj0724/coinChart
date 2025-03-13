@@ -24,8 +24,8 @@ export type SymbolData = {
 
 export type Order = {
   lastUpdateId: number;
-  bids: string[]; // first : PRICE, seconde : QTY
-  asks: string[];
+  bids: string[][]; // first : PRICE, seconde : QTY
+  asks: string[][];
 };
 
 export type SymbolDataByWS = {
