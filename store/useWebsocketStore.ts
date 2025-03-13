@@ -2,10 +2,15 @@ import { BASE_WS_URL } from '@/lib/constance';
 import { AggTrade, DepthUpdate, Miniticker } from '@/types/streams';
 import { create } from 'zustand';
 
+type DepthDateType = {
+  asks: string[][] | [];
+  bids: string[][] | [];
+};
+
 interface WebSocketStore {
   symbol: string;
   miniTicker: Miniticker[];
-  depthUpdate: DepthUpdate | null;
+  depthUpdate: DepthDateType;
   aggTrade: AggTrade[];
   setSymbol: (symbol: string) => void;
   connectWebSocket: () => void;
@@ -35,7 +40,19 @@ export const useWebSocketStore = create<WebSocketStore>((set, get) => {
 
       set({ miniTicker: Array.from(tickerMap.values()) });
     } else if (data.e === 'depthUpdate') {
-      set({ depthUpdate: data });
+      const depthData: DepthUpdate = data;
+      const askList = Array.isArray(depthData?.a)
+        ? [...depthData.a]
+            .filter((ask) => ask[1] !== '0.00000000')
+            .slice(0, 19)
+            .reverse()
+        : [];
+      const bidList = Array.isArray(depthData?.b)
+        ? [...depthData?.b]
+            .filter((bid) => bid[1] !== '0.00000000')
+            .slice(0, 19)
+        : [];
+      set({ depthUpdate: { asks: askList, bids: bidList } });
     } else if (data.e === 'aggTrade') {
       set((state) => ({
         aggTrade: [{ ...data }, ...state.aggTrade.slice(0, 29)],
@@ -80,7 +97,7 @@ export const useWebSocketStore = create<WebSocketStore>((set, get) => {
   return {
     symbol: '',
     miniTicker: [],
-    depthUpdate: null,
+    depthUpdate: { asks: [], bids: [] },
     aggTrade: [],
     setSymbol: (newSymbol: string) => {
       if (get().symbol !== newSymbol) {

@@ -7,20 +7,11 @@ import { useWebSocketStore } from '@/store/useWebsocketStore';
 export default function OrderBookContainer() {
   const { setPrice, setAmountBid, setAmountAsk } = useCoinStore();
   const depthUpdate = useWebSocketStore((state) => state.depthUpdate);
-
-  const askList = Array.isArray(depthUpdate?.a)
-    ? [...depthUpdate.a]
-        .filter((ask) => ask[1] !== '0.00000000')
-        .slice(0, 19)
-        .reverse()
-    : [];
-  const bidList = Array.isArray(depthUpdate?.b)
-    ? depthUpdate?.b.filter((ask) => ask[1] !== '0.00000000').slice(0, 19)
-    : [];
+  const { asks, bids } = depthUpdate;
 
   const settingAskState = (index: number) => {
-    const newPrice = Number(askList[index][0]);
-    const newArr = askList.slice(index); // askList의 index부터 끝까지 자른 배열
+    const newPrice = Number(asks[index][0]);
+    const newArr = asks.slice(index); // askList의 index부터 끝까지 자른 배열
     const totalVolume = newArr
       .map((item) => item[1]) // item[1]을 추출하여 새로운 배열을 생성
       .reduce((acc, volume) => acc + Number(volume), 0); // 배열의 모든 값을 더함
@@ -31,8 +22,8 @@ export default function OrderBookContainer() {
   };
 
   const settingBidState = (index: number) => {
-    const newPrice = Number(bidList[index][0]);
-    const newArr = bidList.slice(0, index); // bidList의 index부터 끝까지 자른 배열
+    const newPrice = Number(bids[index][0]);
+    const newArr = bids.slice(0, index); // bidList의 index부터 끝까지 자른 배열
     const totalVolume = newArr
       .map((item) => item[1]) // item[1]을 추출하여 새로운 배열을 생성
       .reduce((acc, volume) => acc + Number(volume), 0); // 배열의 모든 값을 더함
@@ -51,7 +42,7 @@ export default function OrderBookContainer() {
         <p className='w-1/3 text-end'>Total</p>
       </div>
       <ul className='w-full flex flex-col gap-1'>
-        {askList.map((item, index) => (
+        {asks.map((item, index) => (
           <li
             key={index}
             className='relative flex text-xs justify-between hover:bg-gray-100 cursor-pointer'
@@ -73,7 +64,7 @@ export default function OrderBookContainer() {
         ))}
       </ul>
       <ul className='w-full flex flex-col gap-1'>
-        {bidList.map((item, index) => (
+        {bids.map((item, index) => (
           <li
             key={index}
             className='relative flex text-xs justify-between hover:bg-gray-100 cursor-pointer'
