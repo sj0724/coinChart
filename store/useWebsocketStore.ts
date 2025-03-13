@@ -62,9 +62,9 @@ export const useWebSocketStore = create<WebSocketStore>((set, get) => {
   const connectWebSocket = () => {
     const symbol = get().symbol;
     if (!symbol) return;
-    if (socket) socket.close();
-
-    socket = new WebSocket(BASE_WS_URL);
+    if (!socket) {
+      socket = new WebSocket(BASE_WS_URL);
+    }
     socket.onopen = () => {
       const subscribeMessage = {
         method: 'SUBSCRIBE',
@@ -99,7 +99,22 @@ export const useWebSocketStore = create<WebSocketStore>((set, get) => {
     depthUpdate: { asks: [], bids: [] },
     aggTrade: [],
     setSymbol: (newSymbol: string) => {
-      if (get().symbol !== newSymbol) {
+      const currentSymbol = get().symbol;
+      if (currentSymbol && socket) {
+        socket.onopen = () => {
+          const subscribeMessage = {
+            method: 'UNSUBSCRIBE',
+            params: [
+              '!miniTicker@arr@3000ms',
+              `${currentSymbol.toLowerCase()}@depth`,
+              `${currentSymbol.toLowerCase()}@aggTrade`,
+            ],
+            id: 1,
+          };
+          socket?.send(JSON.stringify(subscribeMessage));
+        };
+      }
+      if (currentSymbol !== newSymbol) {
         set({ symbol: newSymbol });
         get().connectWebSocket();
       }
