@@ -1,8 +1,9 @@
 import { BASE_WS_URL } from '@/lib/constance';
 import { AggTrade, DepthUpdate, Miniticker } from '@/types/streams';
+import { mergeDepthData } from '@/utils/mergeDepthData';
 import { create } from 'zustand';
 
-type DepthDateType = {
+export type DepthDateType = {
   asks: string[][] | [];
   bids: string[][] | [];
 };
@@ -12,6 +13,7 @@ interface WebSocketStore {
   miniTicker: Miniticker[];
   depthUpdate: DepthDateType;
   aggTrade: AggTrade[];
+  setDepthUpdate: (data: DepthDateType) => void;
   setSymbol: (symbol: string) => void;
   connectWebSocket: () => void;
   disconnectWebSocket: () => void;
@@ -41,17 +43,14 @@ export const useWebSocketStore = create<WebSocketStore>((set, get) => {
       set({ miniTicker: Array.from(tickerMap.values()) });
     } else if (data.e === 'depthUpdate') {
       const depthData: DepthUpdate = data;
-      const askList = Array.isArray(depthData?.a)
-        ? [...depthData.a]
-            .filter((ask) => ask[1] !== '0.00000000')
-            .slice(0, 19)
-            .reverse()
-        : [];
-      const bidList = Array.isArray(depthData?.b)
-        ? [...depthData?.b]
-            .filter((bid) => bid[1] !== '0.00000000')
-            .slice(0, 19)
-        : [];
+      const currentData = get().depthUpdate;
+      if (!currentData.asks || !currentData.bids) return; // 초기 데이터 설정 후, 웹소켓 데이터 추가
+      const askList = mergeDepthData(
+        depthData.a || [],
+        currentData.asks,
+        false
+      ).reverse(); // 가격 낮은 순
+      const bidList = mergeDepthData(depthData.b || [], currentData.bids, true); // 가격 높은 순
       set({ depthUpdate: { asks: askList, bids: bidList } });
     } else if (data.e === 'aggTrade') {
       set((state) => ({
@@ -104,6 +103,9 @@ export const useWebSocketStore = create<WebSocketStore>((set, get) => {
         set({ symbol: newSymbol });
         get().connectWebSocket();
       }
+    },
+    setDepthUpdate: (data: DepthDateType) => {
+      set({ depthUpdate: data });
     },
     connectWebSocket,
     disconnectWebSocket,

@@ -3,10 +3,17 @@
 import { numberWithUnit } from '@/utils/numberWithUnit';
 import useCoinStore from '@/store/useCoinStore';
 import { useWebSocketStore } from '@/store/useWebsocketStore';
+import { useEffect } from 'react';
+import { fetchDepthList } from '@/app/api/order/helper';
 
-export default function OrderBookContainer() {
+interface Props {
+  symbolName: string;
+}
+
+export default function OrderBookContainer({ symbolName }: Props) {
   const { setPrice, setAmountBid, setAmountAsk } = useCoinStore();
   const depthUpdate = useWebSocketStore((state) => state.depthUpdate);
+  const setDepthUpdate = useWebSocketStore((state) => state.setDepthUpdate);
   const { asks, bids } = depthUpdate;
 
   const settingAskState = (index: number) => {
@@ -32,6 +39,16 @@ export default function OrderBookContainer() {
     setAmountAsk(totalVolume.toFixed(5));
     setAmountBid('');
   };
+
+  useEffect(() => {
+    const getDepthData = async () => {
+      const result = await fetchDepthList(symbolName);
+      if (result) {
+        setDepthUpdate({ asks: result.asks, bids: result.bids });
+      }
+    };
+    getDepthData();
+  }, [symbolName]);
 
   return (
     <div className='border rounded-md p-3 w-[300px] flex flex-col gap-2'>
