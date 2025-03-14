@@ -7,3 +7,31 @@ export const SORT_MENU: { name: string; value: SORT_OPTIONS }[] = [
 ];
 
 export const INTERVAL_MENU = ['3m', '15m', '1h', '4h', '1d', '1w'];
+
+export const CURRENCY_OPTIONS = [
+  'USDT',
+  'FDUSD',
+  'USDC',
+  'BNB',
+  'BTC',
+  'ETH',
+  'TUSD',
+  'DAI',
+  'XRP',
+  'TRX',
+  'DOGE',
+  'EURI',
+  'SOL',
+  'TRY',
+  'EUR',
+  'BRL',
+  'ARS',
+  'COP',
+  'CZK',
+  'JPY',
+  'MXN',
+  'PLN',
+  'RON',
+  'UAH',
+  'ZAR',
+];
