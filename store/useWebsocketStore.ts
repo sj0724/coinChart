@@ -35,9 +35,7 @@ export const useWebSocketStore = create<WebSocketStore>((set, get) => {
       );
 
       data.forEach((symbol) => {
-        if (symbol.s.toLowerCase().endsWith('usdt')) {
-          tickerMap.set(symbol.s, symbol);
-        }
+        tickerMap.set(symbol.s, symbol);
       });
 
       set({ miniTicker: Array.from(tickerMap.values()) });

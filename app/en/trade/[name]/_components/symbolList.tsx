@@ -7,17 +7,25 @@ import { SORT_MENU } from '@/lib/menu';
 import { useWebSocketStore } from '@/store/useWebsocketStore';
 import SymbolListItem from './symbolListItem';
 import { SORT_OPTIONS } from '@/types/sort';
+import CurrencyContainer from './currencyContainer';
 
 export default function SymbolList() {
+  const [currency, setCurrency] = useState('USDT');
   const [keyword, setKeyword] = useState('');
   const [sortBy, setSortBy] = useState<SORT_OPTIONS>('priceDes');
   const miniTicker = useWebSocketStore((state) => state.miniTicker);
 
-  const sortTickerList = Array.from(miniTicker.values()).sort((a, b) => {
-    if (sortBy === 'priceDes') return parseFloat(b.c) - parseFloat(a.c);
-    if (sortBy === 'priceAsc') return parseFloat(a.c) - parseFloat(b.c);
-    return parseFloat(b.q) - parseFloat(a.q);
-  });
+  const sortTickerList = Array.from(miniTicker.values())
+    .sort((a, b) => {
+      if (sortBy === 'priceDes') return parseFloat(b.c) - parseFloat(a.c);
+      if (sortBy === 'priceAsc') return parseFloat(a.c) - parseFloat(b.c);
+      return parseFloat(b.q) - parseFloat(a.q);
+    })
+    .filter((item) => item.s.endsWith(currency));
+
+  const changeCurrency = (value: string) => {
+    setCurrency(value);
+  };
 
   const filteredList = sortTickerList.filter((item) =>
     item.s.toLowerCase().includes(keyword.toLowerCase())
@@ -35,8 +43,11 @@ export default function SymbolList() {
     <div className='relative rounded-lg border h-[500px] w-[300px] overflow-scroll'>
       <div className='sticky top-0 bg-white flex flex-col w-full pt-3 px-3 gap-2 text-sm'>
         <SymbolSearchBar onChange={changeKeyword} />
-        <div className='flex justify-between'>
-          <p>USDT</p>
+        <div className='flex flex-col'>
+          <CurrencyContainer
+            currentCurrency={currency}
+            handleClick={changeCurrency}
+          />
           <SymbolSortDropdown
             list={SORT_MENU}
             sortBy={sortBy}
@@ -47,7 +58,7 @@ export default function SymbolList() {
       <ul className='flex flex-col'>
         {filteredList.map((item) => (
           <li key={item.s}>
-            <SymbolListItem symbol={item} />
+            <SymbolListItem symbol={item} currency={currency} />
           </li>
         ))}
       </ul>

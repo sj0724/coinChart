@@ -6,15 +6,16 @@ import Link from 'next/link';
 
 interface Props {
   symbol: Miniticker;
+  currency: string;
 }
 
-export default function SymbolListItem({ symbol }: Props) {
+export default function SymbolListItem({ symbol, currency }: Props) {
   const changePercent =
     ((Number(symbol.c) - Number(symbol.o)) / Number(symbol.o)) * 100;
   return (
     <Link href={`/en/trade/${symbol.s}`}>
       <div className='py-2 px-3 flex justify-between hover:bg-gray-100 text-sm'>
-        <p>{symbol.s}</p>
+        <p>{symbol.s.replace(currency, `/${currency}`)}</p>
         <div className='flex gap-5 text-center items-center'>
           <p>{formatNumber(symbol.c)}</p>
           <p
