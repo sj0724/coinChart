@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import SymbolSearchBar from './symbolSearchBar';
 import SymbolSortDropdown from '@/app/en/trade/[name]/_components/symbolSortDropdown';
 import { SORT_MENU } from '@/lib/menu';
@@ -8,12 +8,16 @@ import { useWebSocketStore } from '@/store/useWebsocketStore';
 import SymbolListItem from './symbolListItem';
 import { SORT_OPTIONS } from '@/types/sort';
 import CurrencyContainer from './currencyContainer';
+import { fetchSymbolList } from '@/app/api/totalList/helper';
+import { convertToMiniTicker } from '@/utils/convertToMiniTicker';
+import { DEFAULT_CURRENCY } from '@/lib/constance';
 
 export default function SymbolList() {
-  const [currency, setCurrency] = useState('USDT');
+  const [currency, setCurrency] = useState(DEFAULT_CURRENCY);
   const [keyword, setKeyword] = useState('');
   const [sortBy, setSortBy] = useState<SORT_OPTIONS>('priceDes');
   const miniTicker = useWebSocketStore((state) => state.miniTicker);
+  const setMiniTicker = useWebSocketStore((state) => state.setminiTicker);
 
   const sortTickerList = Array.from(miniTicker.values())
     .sort((a, b) => {
@@ -38,6 +42,17 @@ export default function SymbolList() {
   const changeSortBy = (option: SORT_OPTIONS) => {
     setSortBy(option);
   };
+
+  useEffect(() => {
+    const getSymbolList = async () => {
+      const result = await fetchSymbolList();
+      if (result) {
+        const convertData = convertToMiniTicker(result);
+        setMiniTicker(convertData);
+      }
+    };
+    getSymbolList();
+  }, []);
 
   return (
     <div className='relative rounded-lg border h-[500px] w-[300px] overflow-scroll'>
