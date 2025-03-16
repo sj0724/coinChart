@@ -1,7 +1,7 @@
-import { BASE_BINANCE_URL } from '@/lib/constance';
+import { BASE_BINANCE_URL, DEFAULT_CURRENCY } from '@/lib/constance';
 import { ExchangeInfo, SymbolData } from '@/types/binance';
 
-export const fetchSymbolList = async (sortBy: string, currency: string) => {
+export const fetchSymbolList = async () => {
   try {
     // 거래중인 자산 조회
     const request = await fetch(
@@ -10,7 +10,7 @@ export const fetchSymbolList = async (sortBy: string, currency: string) => {
     const totalExchange: ExchangeInfo = await request.json();
 
     const currencyPairs = totalExchange.symbols
-      .filter((s) => s.quoteAsset === currency)
+      .filter((s) => s.quoteAsset === DEFAULT_CURRENCY)
       .map((s) => s.symbol);
 
     const batches = []; // symbols 요청을 나눠서 보내기 위한 batch 배열
@@ -26,7 +26,7 @@ export const fetchSymbolList = async (sortBy: string, currency: string) => {
         try {
           const symbolsList = JSON.stringify(item);
           const response = await fetch(
-            `${BASE_BINANCE_URL}/ticker/24hr?symbols=${symbolsList}`
+            `${BASE_BINANCE_URL}/ticker/24hr?symbols=${symbolsList}&type=mini`
           );
 
           if (!response.ok) {
@@ -42,16 +42,8 @@ export const fetchSymbolList = async (sortBy: string, currency: string) => {
     );
 
     const sortedData = results.sort((a, b) => {
-      if (sortBy === 'priceDes') {
-        // 가격 내림차순 정렬
-        return parseFloat(b.lastPrice) - parseFloat(a.lastPrice);
-      } else if (sortBy === 'priceAsc') {
-        // 가격 오림차순 정렬
-        return parseFloat(a.lastPrice) - parseFloat(b.lastPrice);
-      } else {
-        // 거래량 내림차순 정렬
-        return parseFloat(b.quoteVolume) - parseFloat(a.quoteVolume);
-      }
+      // 가격 내림차순 정렬
+      return parseFloat(b.lastPrice) - parseFloat(a.lastPrice);
     });
 
     return sortedData;
