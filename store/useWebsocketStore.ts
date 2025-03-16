@@ -14,7 +14,8 @@ interface WebSocketStore {
   depthUpdate: DepthDateType;
   aggTrade: AggTrade[];
   setDepthUpdate: (data: DepthDateType) => void;
-  setSymbol: (symbol: string) => void;
+  setSymbol: (data: string) => void;
+  setminiTicker: (data: Miniticker[]) => void;
   connectWebSocket: () => void;
   disconnectWebSocket: () => void;
 }
@@ -30,6 +31,7 @@ export const useWebSocketStore = create<WebSocketStore>((set, get) => {
       data[0].e === '24hrMiniTicker'
     ) {
       const existingMiniTicker = get().miniTicker;
+      if (!existingMiniTicker) return;
       const tickerMap = new Map(
         existingMiniTicker.map((item) => [item.s, item])
       );
@@ -119,6 +121,9 @@ export const useWebSocketStore = create<WebSocketStore>((set, get) => {
     },
     setDepthUpdate: (data: DepthDateType) => {
       set({ depthUpdate: data });
+    },
+    setminiTicker: (data: Miniticker[]) => {
+      set({ miniTicker: data });
     },
     connectWebSocket,
     disconnectWebSocket,
