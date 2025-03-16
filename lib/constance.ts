@@ -9,3 +9,5 @@ export const BASE_BINANCE_URL = 'https://api.binance.com/api/v3';
 
 export const DEFAULT_STALE_TIME = 3 * 60 * 1000; // 캐싱 유지 3분
 export const LIMIT = 200; // 데이터 갯수
+
+export const DEFAULT_CURRENCY = 'USDT';
