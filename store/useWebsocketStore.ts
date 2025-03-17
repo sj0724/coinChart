@@ -100,23 +100,35 @@ export const useWebSocketStore = create<WebSocketStore>((set, get) => {
     aggTrade: [],
     setSymbol: (newSymbol: string) => {
       const currentSymbol = get().symbol;
-      if (currentSymbol && socket) {
-        socket.onopen = () => {
-          const subscribeMessage = {
-            method: 'UNSUBSCRIBE',
-            params: [
-              '!miniTicker@arr@3000ms',
-              `${currentSymbol.toLowerCase()}@depth`,
-              `${currentSymbol.toLowerCase()}@aggTrade`,
-            ],
-            id: 1,
-          };
-          socket?.send(JSON.stringify(subscribeMessage));
-        };
-      }
-      if (currentSymbol !== newSymbol) {
+      if (currentSymbol === newSymbol) return;
+      if (!socket) {
+        // 웹소켓 연결된 이력 없면 웹소켓 연결
         set({ symbol: newSymbol });
         get().connectWebSocket();
+      } else {
+        // 웹소켓 연결된 이력 있으면 UNSUBSCRIBE후, SUBSCRIBE
+        const unsubscribeMessage = {
+          method: 'UNSUBSCRIBE',
+          params: [
+            `${currentSymbol.toLowerCase()}@depth`,
+            `${currentSymbol.toLowerCase()}@aggTrade`,
+          ],
+          id: 2,
+        };
+        socket.send(JSON.stringify(unsubscribeMessage));
+
+        const subscribeMessage = {
+          method: 'SUBSCRIBE',
+          params: [
+            `${newSymbol.toLowerCase()}@depth`,
+            `${newSymbol.toLowerCase()}@aggTrade`,
+          ],
+          id: 3,
+        };
+        socket.send(JSON.stringify(subscribeMessage));
+
+        set({ symbol: newSymbol });
+        set({ aggTrade: [] }); // 해당 데이터를 비워서 새로운 주문 바로 적용되도록 적용
       }
     },
     setDepthUpdate: (data: DepthDateType) => {
