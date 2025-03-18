@@ -19,7 +19,7 @@ export default function TradingBoard() {
             <p>{amountAsk || 0}</p>
           </div>
         </div>
-        <Button text='거래하기' type='red' />
+        <Button color='red'>거래하기</Button>
       </div>
       <div className='w-1/2 flex flex-col gap-2'>
         <p className='text-lg font-bold'>매수</p>
@@ -33,7 +33,7 @@ export default function TradingBoard() {
             <p>{amountBid || 0}</p>
           </div>
         </div>
-        <Button text='거래하기' type='green' />
+        <Button color='green'>거래하기</Button>
       </div>
     </div>
   );

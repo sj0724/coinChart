@@ -1,19 +1,22 @@
-interface Props {
-  text: string;
-  type: 'red' | 'green';
+import { ReactNode } from 'react';
+
+interface Props extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+  color: 'red' | 'green';
+  children: ReactNode;
 }
 
-export default function Button({ text, type }: Props) {
+export default function Button({ color, children, ...props }: Props) {
   const buttonColor =
-    type === 'red'
+    color === 'red'
       ? 'bg-red-500 hover:bg-red-500/50 active:bg-red-700'
       : 'bg-green-500 hover:bg-green-500/50 active:bg-green-700';
   return (
     <button
       type='button'
       className={`w-full rounded-md p-1 text-white font-bold ${buttonColor}`}
+      {...props}
     >
-      {text}
+      {children}
     </button>
   );
 }
