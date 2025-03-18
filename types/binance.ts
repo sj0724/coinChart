@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 export type SymbolData = {
   symbol: string;
   openPrice: string;
