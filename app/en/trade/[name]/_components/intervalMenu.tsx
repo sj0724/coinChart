@@ -1,9 +1,10 @@
 'use client';
 
 import { INTERVAL_MENU } from '@/lib/menu';
+import { INTERVAL_OPTIONS } from '@/types/sort';
 
 interface Props {
-  changeInterval: (value: string) => void;
+  changeInterval: (value: INTERVAL_OPTIONS) => void;
   chartInterval: string;
 }
 
