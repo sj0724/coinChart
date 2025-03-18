@@ -16,6 +16,7 @@ interface WebSocketStore {
   setDepthUpdate: (data: DepthDateType) => void;
   setSymbol: (data: string) => void;
   setminiTicker: (data: Miniticker[]) => void;
+  setAggTrade: (data: AggTrade[]) => void;
   connectWebSocket: () => void;
   disconnectWebSocket: () => void;
 }
@@ -31,7 +32,7 @@ export const useWebSocketStore = create<WebSocketStore>((set, get) => {
       data[0].e === '24hrMiniTicker'
     ) {
       const existingMiniTicker = get().miniTicker;
-      if (!existingMiniTicker) return;
+      if (existingMiniTicker.length === 0) return;
       const tickerMap = new Map(
         existingMiniTicker.map((item) => [item.s, item])
       );
@@ -53,6 +54,8 @@ export const useWebSocketStore = create<WebSocketStore>((set, get) => {
       const bidList = mergeDepthData(depthData.b || [], currentData.bids, true); // 가격 높은 순
       set({ depthUpdate: { asks: askList, bids: bidList } });
     } else if (data.e === 'aggTrade') {
+      const currentData = get().aggTrade;
+      if (currentData.length === 0) return; // 초기 데이터 설정 후, 웹소켓 데이터 추가
       set((state) => ({
         aggTrade: [{ ...data }, ...state.aggTrade.slice(0, 29)],
       }));
@@ -136,6 +139,9 @@ export const useWebSocketStore = create<WebSocketStore>((set, get) => {
     },
     setminiTicker: (data: Miniticker[]) => {
       set({ miniTicker: data });
+    },
+    setAggTrade: (data: AggTrade[]) => {
+      set({ aggTrade: data });
     },
     connectWebSocket,
     disconnectWebSocket,
