@@ -8,6 +8,7 @@ import IntervalMenu from './intervalMenu';
 import { useInfiniteQuery } from '@tanstack/react-query';
 import { fetchChartData } from '@/app/api/chart/helper';
 import { DEFAULT_STALE_TIME, LIMIT } from '@/lib/constance';
+import { INTERVAL_OPTIONS } from '@/types/sort';
 
 interface Props {
   symbol: string;
@@ -18,14 +19,24 @@ type HoverData = {
   line: Volume;
 };
 
+// 차트 범위 설정을 위한 옵션
+const INTERVAL_OPTION = {
+  '1w': 3600 * 24 * 700,
+  '1d': 3600 * 24 * 100,
+  '4h': 3600 * 24 * 14,
+  '1h': 3600 * 24 * 6,
+  '15m': 3600 * 24 * 2,
+  '3m': 3600 * 6,
+};
+
 export default function Chart({ symbol }: Props) {
   const chartRef = useRef<HTMLDivElement>(null);
   const [hoverData, setHoverData] = useState<HoverData | null>(null);
   const isEndRef = useRef(false);
   const isLoadingRef = useRef(false);
-  const [chartInterval, setChartInterval] = useState('1w');
+  const [chartInterval, setChartInterval] = useState<INTERVAL_OPTIONS>('1w');
 
-  const changeInterval = (value: string) => {
+  const changeInterval = (value: INTERVAL_OPTIONS) => {
     setChartInterval(value);
   };
 
@@ -86,6 +97,18 @@ export default function Chart({ symbol }: Props) {
     }
     if (allHistograms.length > 0) {
       lineSeries.setData(allHistograms);
+    }
+
+    const prevLastTime =
+      infiniteData.pages.length > 1
+        ? infiniteData.pages.at(-2)?.candle?.at(0)?.time // 이전 데이터 첫번째 시간 사용
+        : allCandles.at(0)?.time;
+
+    if (infiniteData.pages.length > 1) {
+      chart.timeScale().setVisibleRange({
+        from: prevLastTime,
+        to: prevLastTime + INTERVAL_OPTION[chartInterval],
+      });
     }
 
     chart.subscribeCrosshairMove((param) => {
