@@ -19,7 +19,7 @@ export interface DepthUpdate {
 }
 
 export interface AggTrade {
-  e: string; // Event type
+  e: 'aggTrade'; // Event type
   E: number; // Event time
   s: string; // Symbol
   a: number; // Aggregate trade ID
