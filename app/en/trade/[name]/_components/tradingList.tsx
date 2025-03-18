@@ -1,12 +1,15 @@
 'use client';
 
+import { fetchAggTradeData } from '@/app/api/order/helper';
 import useCoinStatusStore from '@/store/useCoinStatusStore';
 import { useWebSocketStore } from '@/store/useWebsocketStore';
+import { convertToAggTrade } from '@/utils/convertToAggTrade';
 import { formatNumber } from '@/utils/formatNumber';
 import { useEffect } from 'react';
 
 export default function TradingList({ symbol }: { symbol: string }) {
   const aggTrade = useWebSocketStore((state) => state.aggTrade);
+  const setAggTrade = useWebSocketStore((state) => state.setAggTrade);
   const { setStatus } = useCoinStatusStore();
 
   useEffect(() => {
@@ -16,6 +19,18 @@ export default function TradingList({ symbol }: { symbol: string }) {
       setStatus(true);
     }
   }, [aggTrade]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const result = await fetchAggTradeData(symbol);
+      if (result) {
+        const reverseData = result.reverse();
+        const convertedData = convertToAggTrade(reverseData, symbol);
+        setAggTrade(convertedData);
+      }
+    };
+    fetchData();
+  }, []);
 
   return (
     <div className='p-4 border rounded-md h-[405px] overflow-y-scroll'>
