@@ -30,7 +30,7 @@ export default function TradingList({ symbol }: { symbol: string }) {
       }
     };
     fetchData();
-  }, []);
+  }, [symbol]);
 
   return (
     <div className='p-4 border rounded-md h-[405px] overflow-y-scroll'>
