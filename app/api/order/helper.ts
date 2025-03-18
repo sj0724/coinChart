@@ -1,5 +1,5 @@
 import { BASE_BINANCE_URL } from '@/lib/constance';
-import { Order } from '@/types/binance';
+import { AggTradeData, Order } from '@/types/binance';
 
 export const fetchDepthList = async (symbol: string) => {
   try {
@@ -19,6 +19,19 @@ export const fetchDepthList = async (symbol: string) => {
       : [];
 
     return { asks: askList ?? [], bids: bidList ?? [] };
+  } catch (error) {
+    console.error('Error fetching order book:', error);
+  }
+};
+
+export const fetchAggTradeData = async (symbol: string) => {
+  try {
+    const request = await fetch(
+      `${BASE_BINANCE_URL}/aggTrades?symbol=${symbol}&limit=30`
+    );
+    const aggTradeDate: AggTradeData[] = await request.json();
+
+    return aggTradeDate;
   } catch (error) {
     console.error('Error fetching order book:', error);
   }
