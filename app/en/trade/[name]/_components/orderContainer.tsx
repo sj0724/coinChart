@@ -22,22 +22,20 @@ export default function OrderBookContainer({ symbolName }: Props) {
     const totalVolume = newArr
       .map((item) => item[1]) // item[1]을 추출하여 새로운 배열을 생성
       .reduce((acc, volume) => acc + Number(volume), 0); // 배열의 모든 값을 더함
-
-    setPrice(newPrice.toFixed(2));
-    setAmountBid(totalVolume.toFixed(5));
-    setAmountAsk('');
+    setPrice(Number(newPrice.toFixed(2)));
+    setAmountBid(Number(totalVolume.toFixed(5)));
+    setAmountAsk(0);
   };
 
   const settingBidState = (index: number) => {
     const newPrice = Number(bids[index][0]);
-    const newArr = bids.slice(0, index); // bidList의 index부터 끝까지 자른 배열
+    const newArr = bids.slice(0, index + 1); // bidList의 index부터 끝까지 자른 배열
     const totalVolume = newArr
       .map((item) => item[1]) // item[1]을 추출하여 새로운 배열을 생성
       .reduce((acc, volume) => acc + Number(volume), 0); // 배열의 모든 값을 더함
-
-    setPrice(newPrice.toFixed(2));
-    setAmountAsk(totalVolume.toFixed(5));
-    setAmountBid('');
+    setPrice(Number(newPrice.toFixed(2)));
+    setAmountAsk(Number(totalVolume.toFixed(5)));
+    setAmountBid(0);
   };
 
   useEffect(() => {
