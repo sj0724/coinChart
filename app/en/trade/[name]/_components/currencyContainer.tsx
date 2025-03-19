@@ -10,14 +10,14 @@ export default function CurrencyContainer({
   handleClick,
 }: Props) {
   return (
-    <div className='max-w-full h-12 flex overflow-x-scroll gap-1'>
+    <div className='max-w-full h-fit flex overflow-x-scroll gap-1'>
       {CURRENCY_OPTIONS.map((item, index) => (
         <div
           onClick={() => handleClick(item)}
           key={index}
           className={`${
-            currentCurrency === item && 'bg-gray-300 font-bold'
-          } cursor-pointer p-2 rounded flex items-center h-fit hover:font-bold`}
+            currentCurrency === item && 'border-b-2 border-blue-500 font-bold'
+          } cursor-pointer px-2 py-1 flex items-center h-fit hover:font-bold text-xs`}
         >
           {item}
         </div>

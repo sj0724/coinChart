@@ -10,7 +10,7 @@ interface Props {
 
 export default function IntervalMenu({ changeInterval, chartInterval }: Props) {
   return (
-    <ul className='flex gap-1'>
+    <ul className='flex gap-1 bg-white p-2 rounded-t'>
       {INTERVAL_MENU.map((item, index) => (
         <li key={index}>
           <button

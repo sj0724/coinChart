@@ -35,7 +35,7 @@ export default function SymbolInfo({ symbol }: Props) {
   }, [symbol]);
 
   return (
-    <div className='h-16 p-4 flex items-center justify-between gap-3 border rounded-md w-full'>
+    <div className='h-1/6 p-4 flex items-center justify-between gap-3 bg-white rounded-md w-full'>
       {!detail ? (
         <div className='h-7 bg-gray-100 rounded-md' />
       ) : (

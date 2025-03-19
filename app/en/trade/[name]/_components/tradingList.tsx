@@ -33,7 +33,7 @@ export default function TradingList({ symbol }: { symbol: string }) {
   }, [symbol]);
 
   return (
-    <div className='p-4 border rounded-md h-[405px] overflow-y-scroll'>
+    <div className='p-4 bg-white rounded-md h-1/2 overflow-y-scroll'>
       <h2 className='text-lg font-bold'>실시간 거래 데이터 ({symbol})</h2>
       <ul className='mt-2 flex flex-col gap-2 text-sm'>
         <li className='flex justify-between'>

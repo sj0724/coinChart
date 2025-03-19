@@ -22,14 +22,14 @@ export default function Page({
   }, [symbolName]);
 
   return (
-    <div className='flex w-screen gap-2 justify-center py-2'>
+    <div className='flex w-full max-w-[1500px] h-[950px] gap-2 justify-center py-2 px-2'>
       <OrderBookContainer symbolName={symbolName} />
-      <div className='flex flex-col gap-2'>
+      <div className='flex flex-col gap-2 w-3/5'>
         <SymbolInfo symbol={symbolName} />
         <Chart symbol={symbolName} />
         <TradingBoard />
       </div>
-      <div className='flex flex-col gap-2'>
+      <div className='flex flex-col gap-2 w-1/5'>
         <SymbolList />
         <TradingList symbol={symbolName} />
       </div>

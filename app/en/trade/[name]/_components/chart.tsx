@@ -141,7 +141,7 @@ export default function Chart({ symbol }: Props) {
   }, [infiniteData, fetchNextPage]);
 
   return (
-    <>
+    <div>
       <IntervalMenu
         changeInterval={changeInterval}
         chartInterval={chartInterval}
@@ -183,9 +183,9 @@ export default function Chart({ symbol }: Props) {
         )}
         <div
           ref={chartRef}
-          className='border rounded-md p-5 min-w-[840px] min-h-[590px]'
+          className='rounded-b p-5 w-full min-h-1/2 flex justify-center bg-white'
         />
       </div>
-    </>
+    </div>
   );
 }

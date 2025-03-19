@@ -13,7 +13,8 @@ export default function Home() {
   const onSubmit = (e: React.FormEvent) => {
     e.preventDefault(); // 기본 폼 제출 방지
     if (!amount || Number(amount) <= 0) return; // 빈 값 또는 0 이하 방지
-    localStorage.setItem('investor', amount);
+    const startData = { start: amount, current: amount };
+    localStorage.setItem('investor', JSON.stringify(startData));
     router.replace('/en/trade/BTCUSDT');
   };
 
@@ -25,7 +26,7 @@ export default function Home() {
   }, []);
 
   return (
-    <div className='flex flex-col items-center justify-center h-screen bg-gray-100'>
+    <div className='flex flex-col items-center justify-center h-screen'>
       <div className='max-w-[400px] flex flex-col items-center justify-between w-full rounded-lg border bg-white p-6 shadow-md'>
         <div className='flex flex-col items-center'>
           <h1 className='font-bold text-2xl mb-4 text-gray-800'>

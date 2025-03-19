@@ -6,7 +6,7 @@ import useCoinStore from '@/store/useCoinStore';
 export default function TradingBoard() {
   const { price, amountBid, amountAsk } = useCoinStore();
   return (
-    <div className='w-full flex border rounded-md p-3 gap-3'>
+    <div className='w-full flex bg-white rounded-md p-3 gap-3 h-1/3'>
       <div className='w-1/2 flex flex-col gap-2'>
         <p className='text-lg font-bold'>매도</p>
         <div className='flex flex-col gap-2'>

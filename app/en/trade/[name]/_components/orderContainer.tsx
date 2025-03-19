@@ -51,7 +51,7 @@ export default function OrderBookContainer({ symbolName }: Props) {
   }, [symbolName]);
 
   return (
-    <div className='border rounded-md p-3 w-[300px] flex flex-col gap-2'>
+    <div className='rounded-md p-3 w-1/5 flex flex-col gap-2 bg-white h-full'>
       <p className='font-semibold'>Order Book</p>
       <div className='flex justify-between text-sm text-gray-500 py-2'>
         <p className='w-1/3'>Price</p>
