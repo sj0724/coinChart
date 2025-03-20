@@ -27,7 +27,7 @@ export default function Page({
       <div className='flex flex-col gap-2 w-3/5'>
         <SymbolInfo symbol={symbolName} />
         <Chart symbol={symbolName} />
-        <TradingBoard />
+        <TradingBoard symbol={symbolName} />
       </div>
       <div className='flex flex-col gap-2 w-1/5'>
         <SymbolList />
