@@ -3,9 +3,14 @@
 import Button from '@/components/button';
 import useCoinStore from '@/store/useCoinStore';
 import useOrderStore, { OrderType } from '@/store/useOrderStore';
+import { orderCalculator } from '@/utils/orderCalculator';
 import { ChangeEvent, useEffect, useState } from 'react';
 
-export default function TradingBoard() {
+interface Props {
+  symbol: string;
+}
+
+export default function TradingBoard({ symbol }: Props) {
   const { price, amountBid, amountAsk } = useCoinStore();
   const setOrder = useOrderStore((state) => state.setOrder);
 
@@ -28,7 +33,11 @@ export default function TradingBoard() {
   const handleTrade = (type: OrderType) => {
     const order = type === 'ask' ? askOrder : bidOrder;
     console.log(order);
-    setOrder(type, order);
+    if (type === 'bid') {
+      orderCalculator('bid', order, symbol);
+    } else {
+      setOrder(type, order);
+    }
   };
 
   useEffect(() => {
