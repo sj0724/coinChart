@@ -5,6 +5,7 @@ import useCoinStore from '@/store/useCoinStore';
 import { useWebSocketStore } from '@/store/useWebsocketStore';
 import { useEffect } from 'react';
 import { fetchDepthList } from '@/app/api/order/helper';
+import { CurrentSymbolPrice } from './currentSymbolPrice';
 
 interface Props {
   symbolName: string;
@@ -78,6 +79,7 @@ export default function OrderBookContainer({ symbolName }: Props) {
           </li>
         ))}
       </ul>
+      <CurrentSymbolPrice />
       <ul className='w-full flex flex-col gap-1'>
         {bids.map((item, index) => (
           <li
