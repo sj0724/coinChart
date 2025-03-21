@@ -12,24 +12,27 @@ export type Database = {
       users: {
         Row: {
           created_at: string | null
+          email: string | null
           id: string
-          invest: number
+          invest: number | null
           name: string
-          start_invest: number
+          start_invest: number | null
         }
         Insert: {
           created_at?: string | null
-          id?: string
-          invest?: number
+          email?: string | null
+          id: string
+          invest?: number | null
           name: string
-          start_invest?: number
+          start_invest?: number | null
         }
         Update: {
           created_at?: string | null
+          email?: string | null
           id?: string
-          invest?: number
+          invest?: number | null
           name?: string
-          start_invest?: number
+          start_invest?: number | null
         }
         Relationships: []
       }
@@ -57,7 +60,7 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "wallet_user_id_fkey1"
+            foreignKeyName: "wallet_user_id_fkey"
             columns: ["user_id"]
             isOneToOne: false
             referencedRelation: "users"
