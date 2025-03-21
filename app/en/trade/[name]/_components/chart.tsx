@@ -155,7 +155,7 @@ export default function Chart({ symbol }: Props) {
         changeInterval={changeInterval}
         chartInterval={chartInterval}
       />
-      <div className='relative p-5 bg-white rounded-b'>
+      <div className='relative p-5 bg-white rounded-b border-t'>
         {hoverData && (
           <div className='absolute top-0 w-full p-4 rounded-md z-30 flex text-sm gap-3 text-gray-600'>
             <p>
