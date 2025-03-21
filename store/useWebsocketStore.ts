@@ -13,6 +13,7 @@ interface WebSocketStore {
   miniTicker: Miniticker[];
   depthUpdate: DepthDateType;
   aggTrade: AggTrade[];
+  symboInfo: Miniticker | null;
   setDepthUpdate: (data: DepthDateType) => void;
   setSymbol: (data: string) => void;
   setminiTicker: (data: Miniticker[]) => void;
@@ -32,14 +33,16 @@ export const useWebSocketStore = create<WebSocketStore>((set, get) => {
       data[0].e === '24hrMiniTicker'
     ) {
       const existingMiniTicker = get().miniTicker;
+      const symbol = get().symbol;
       if (existingMiniTicker.length === 0) return;
       const tickerMap = new Map(
         existingMiniTicker.map((item) => [item.s, item])
       );
-
       data.forEach((symbol) => {
         tickerMap.set(symbol.s, symbol);
       });
+      const currentSymbolInfo = tickerMap.get(symbol);
+      set({ symboInfo: currentSymbolInfo });
 
       set({ miniTicker: Array.from(tickerMap.values()) });
     } else if (data.e === 'depthUpdate') {
@@ -105,6 +108,7 @@ export const useWebSocketStore = create<WebSocketStore>((set, get) => {
     miniTicker: [],
     depthUpdate: { asks: [], bids: [] },
     aggTrade: [],
+    symboInfo: null,
     setSymbol: (newSymbol: string) => {
       const currentSymbol = get().symbol;
       if (currentSymbol === newSymbol) return;

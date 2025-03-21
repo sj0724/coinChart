@@ -1,42 +1,20 @@
 'use client';
 
-import { BASE_WS_URL } from '@/lib/constance';
 import useCoinStatusStore from '@/store/useCoinStatusStore';
-import { SymbolDataByWS } from '@/types/binance';
+import { useWebSocketStore } from '@/store/useWebsocketStore';
 import { formatNumber } from '@/utils/formatNumber';
-import { useEffect, useState } from 'react';
 
 interface Props {
   symbol: string;
 }
 
 export default function SymbolInfo({ symbol }: Props) {
-  const [detail, setDetail] = useState<SymbolDataByWS | null>(null);
   const { status } = useCoinStatusStore();
-  useEffect(() => {
-    const lowerSymbol = symbol.toLowerCase();
-
-    const socket = new WebSocket(`${BASE_WS_URL}/${lowerSymbol}@ticker`);
-
-    socket.onmessage = (event) => {
-      const data = JSON.parse(event.data);
-      setDetail(data);
-    };
-
-    socket.onerror = (error) => {
-      console.error('WebSocket 오류:', error);
-    };
-
-    return () => {
-      if (socket && socket.readyState === WebSocket.OPEN) {
-        socket.close();
-      }
-    };
-  }, [symbol]);
+  const symbolInfo = useWebSocketStore((state) => state.symboInfo);
 
   return (
     <div className='h-1/6 p-4 flex items-center justify-between gap-3 bg-white rounded-md w-full'>
-      {!detail ? (
+      {!symbolInfo ? (
         <div className='h-7 bg-gray-100 rounded-md' />
       ) : (
         <>
@@ -47,7 +25,7 @@ export default function SymbolInfo({ symbol }: Props) {
                 status ? 'text-green-500' : 'text-red-500'
               }`}
             >
-              {formatNumber(detail?.c)}
+              {formatNumber(symbolInfo.c)}
             </p>
           </div>
           <div className='flex gap-4'>
@@ -55,28 +33,41 @@ export default function SymbolInfo({ symbol }: Props) {
               <p className='text-gray-500'>24h Change</p>
               <div
                 className={`flex gap-1 ${
-                  Number(detail.P) < 0 ? 'text-red-500' : 'text-green-500'
+                  Number(symbolInfo.c) < Number(symbolInfo.o)
+                    ? 'text-red-500'
+                    : 'text-green-500'
                 }`}
               >
-                <p>{formatNumber(detail.p)}</p>
-                <p>{Number(detail.P).toFixed(2)}%</p>
+                <p>
+                  {formatNumber(
+                    String(Number(symbolInfo.c) - Number(symbolInfo.o))
+                  )}
+                </p>
+                <p>
+                  {(
+                    ((Number(symbolInfo.c) - Number(symbolInfo.o)) /
+                      Number(symbolInfo.o)) *
+                    100
+                  ).toFixed(2)}
+                  %
+                </p>
               </div>
             </div>
             <div className='flex flex-col text-xs'>
               <p className='text-gray-500'>24h High</p>
-              <p>{formatNumber(detail.h)}</p>
+              <p>{formatNumber(symbolInfo.h)}</p>
             </div>
             <div className='flex flex-col text-xs'>
               <p className='text-gray-500'>24h Low</p>
-              <p>{formatNumber(detail.l)}</p>
+              <p>{formatNumber(symbolInfo.l)}</p>
             </div>
             <div className='flex flex-col text-xs'>
               <p className='text-gray-500'>24h Volume - count</p>
-              <p>{formatNumber(detail.v)}</p>
+              <p>{formatNumber(symbolInfo.v)}</p>
             </div>
             <div className='flex flex-col text-xs'>
               <p className='text-gray-500'>24h Volume - currency</p>
-              <p>{formatNumber(detail.q)}</p>
+              <p>{formatNumber(symbolInfo.q)}</p>
             </div>
           </div>
         </>
