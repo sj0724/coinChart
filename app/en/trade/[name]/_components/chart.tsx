@@ -61,7 +61,7 @@ export default function Chart({ symbol }: Props) {
     }
 
     const chart = createChart(chartRef.current, {
-      width: 800,
+      width: chartRef.current.clientWidth - 200,
       height: 550,
       layout: {
         background: { color: 'white' },
@@ -135,7 +135,16 @@ export default function Chart({ symbol }: Props) {
       }
     });
 
+    const observer = new ResizeObserver(() => {
+      chart.applyOptions({
+        width: chartRef.current?.clientWidth || 800,
+      });
+    });
+
+    observer.observe(chartRef.current);
+
     return () => {
+      observer.disconnect();
       chart.remove();
     };
   }, [infiniteData, fetchNextPage]);
@@ -146,7 +155,7 @@ export default function Chart({ symbol }: Props) {
         changeInterval={changeInterval}
         chartInterval={chartInterval}
       />
-      <div className='relative'>
+      <div className='relative p-5 bg-white rounded-b'>
         {hoverData && (
           <div className='absolute top-0 w-full p-4 rounded-md z-30 flex text-sm gap-3 text-gray-600'>
             <p>
@@ -183,7 +192,7 @@ export default function Chart({ symbol }: Props) {
         )}
         <div
           ref={chartRef}
-          className='rounded-b p-5 w-full min-h-1/2 flex justify-center bg-white'
+          className='w-full min-h-1/2 flex justify-center bg-white'
         />
       </div>
     </div>
