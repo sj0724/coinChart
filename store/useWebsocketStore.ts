@@ -91,6 +91,10 @@ export const useWebSocketStore = create<WebSocketStore>((set, get) => {
 
   const disconnectWebSocket = () => {
     if (socket) {
+      socket.onmessage = null;
+      socket.onerror = null;
+      socket.onclose = null;
+
       socket.close();
       socket = null;
     }
