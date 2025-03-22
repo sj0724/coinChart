@@ -27,7 +27,7 @@ export default function Layout({ children }: { children: ReactNode }) {
 
   return (
     <>
-      <nav className='sticky top-0 left-0 w-full flex justify-center bg-white z-50'>
+      <nav className='sticky top-0 right-0 w-full flex justify-center bg-white z-50'>
         <div className='flex items-center w-full h-16 px-4 justify-between shadow rounded border'>
           <LogoutButton />
           <div className='flex gap-3'>

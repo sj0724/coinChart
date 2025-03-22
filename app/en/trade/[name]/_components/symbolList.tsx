@@ -55,8 +55,8 @@ export default function SymbolList() {
   }, []);
 
   return (
-    <div className='rounded bg-white h-1/2 overflow-y-hidden'>
-      <div className='bg-white flex flex-col w-full pt-3 px-3 gap-2 text-sm'>
+    <div className='rounded bg-white overflow-y-hidden w-full md:w-1/3 xl:w-full p-2'>
+      <div className='bg-white flex flex-col w-full gap-2 text-sm'>
         <SymbolSearchBar onChange={changeKeyword} />
         <div className='flex flex-col items-end'>
           <CurrencyContainer
@@ -70,7 +70,7 @@ export default function SymbolList() {
           />
         </div>
       </div>
-      <ul className='flex flex-col overflow-y-scroll h-full pb-2'>
+      <ul className='flex flex-col overflow-y-scroll h-[350px] pb-2'>
         {filteredList.map((item) => (
           <li key={item.s}>
             <SymbolListItem symbol={item} currency={currency} />

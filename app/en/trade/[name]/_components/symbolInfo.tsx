@@ -13,7 +13,7 @@ export default function SymbolInfo({ symbol }: Props) {
   const symbolInfo = useWebSocketStore((state) => state.symboInfo);
 
   return (
-    <div className='h-1/6 p-4 flex items-center justify-between gap-3 bg-white rounded-md w-full'>
+    <div className='h-1/6 p-4 flex items-center justify-between gap-3 bg-white rounded-md w-full overflow-x-scroll no-scrollbar'>
       {!symbolInfo ? (
         <div className='h-7 bg-gray-100 rounded-md' />
       ) : (
@@ -28,7 +28,7 @@ export default function SymbolInfo({ symbol }: Props) {
               {formatNumber(symbolInfo.c)}
             </p>
           </div>
-          <div className='flex gap-4'>
+          <div className='flex gap-4 text-nowrap pl-5'>
             <div className='flex flex-col text-xs w-20'>
               <p className='text-gray-500'>24h Change</p>
               <div
@@ -62,11 +62,11 @@ export default function SymbolInfo({ symbol }: Props) {
               <p>{formatNumber(symbolInfo.l)}</p>
             </div>
             <div className='flex flex-col text-xs'>
-              <p className='text-gray-500'>24h Volume - count</p>
+              <p className='text-gray-500'>24h Volume(count)</p>
               <p>{formatNumber(symbolInfo.v)}</p>
             </div>
             <div className='flex flex-col text-xs'>
-              <p className='text-gray-500'>24h Volume - currency</p>
+              <p className='text-gray-500'>24h Volume(currency)</p>
               <p>{formatNumber(symbolInfo.q)}</p>
             </div>
           </div>

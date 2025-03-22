@@ -33,14 +33,14 @@ export default function TradingList({ symbol }: { symbol: string }) {
   }, [symbol]);
 
   return (
-    <div className='p-4 bg-white rounded-md h-1/2 overflow-y-hidden'>
-      <h2 className='text-lg font-bold'>실시간 거래 데이터 ({symbol})</h2>
-      <div className='flex justify-between text-sm'>
+    <div className='p-2 bg-white rounded-md flex flex-col gap-2 overflow-y-hidden w-full md:w-2/3 xl:w-full'>
+      <h2 className='font-bold'>실시간 거래 데이터 ({symbol})</h2>
+      <div className='flex justify-between text-sm text-gray-500'>
         <p>Price</p>
         <p>Amount</p>
         <p>Time</p>
       </div>
-      <ul className='mt-2 flex flex-col gap-2 text-sm overflow-y-scroll h-full'>
+      <ul className='mt-2 flex flex-col gap-2 text-sm overflow-y-scroll h-[365px]'>
         {aggTrade.map((trade, index) => (
           <li
             key={index}

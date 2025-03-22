@@ -10,7 +10,7 @@ export default function CurrencyContainer({
   handleClick,
 }: Props) {
   return (
-    <div className='max-w-full h-fit flex overflow-x-scroll gap-1'>
+    <div className='max-w-full h-fit flex overflow-x-scroll gap-1 no-scrollbar'>
       {CURRENCY_OPTIONS.map((item, index) => (
         <div
           onClick={() => handleClick(item)}

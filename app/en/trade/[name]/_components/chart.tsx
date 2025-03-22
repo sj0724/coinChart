@@ -157,7 +157,7 @@ export default function Chart({ symbol }: Props) {
       />
       <div className='relative p-5 bg-white rounded-b border-t'>
         {hoverData && (
-          <div className='absolute top-0 w-full p-4 rounded-md z-30 flex text-sm gap-3 text-gray-600'>
+          <div className='absolute top-0 w-fit p-4 rounded-md z-30 flex text-sm gap-3 text-gray-600'>
             <p>
               {new Date(
                 Number(hoverData.candle.time) * 1000

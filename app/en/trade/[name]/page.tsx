@@ -22,14 +22,17 @@ export default function Page({
   }, [symbolName]);
 
   return (
-    <div className='flex w-full max-w-[1500px] h-[950px] gap-2 justify-center py-2 px-2'>
+    <div
+      className='grid w-full max-w-[1500px] gap-2 p-2 
+                    grid-cols-1 md:grid-cols-3 xl:grid-cols-5 xl:h-[950px] h-fit'
+    >
       <OrderBookContainer symbolName={symbolName} />
-      <div className='flex flex-col gap-2 w-3/5'>
+      <div className='flex flex-col gap-2 md:col-span-2 xl:col-span-3 h-fit'>
         <SymbolInfo symbol={symbolName} />
         <Chart symbol={symbolName} />
         <TradingBoard symbol={symbolName} />
       </div>
-      <div className='flex flex-col gap-2 w-1/5'>
+      <div className='flex flex-col gap-2 md:flex-row xl:flex-col md:col-span-3 xl:col-span-1 xl:row-span-2 h-full'>
         <SymbolList />
         <TradingList symbol={symbolName} />
       </div>

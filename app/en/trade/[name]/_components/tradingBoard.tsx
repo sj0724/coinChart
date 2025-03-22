@@ -46,7 +46,7 @@ export default function TradingBoard({ symbol }: Props) {
   }, [amountAsk, amountBid, price]);
 
   return (
-    <div className='w-full flex bg-white rounded-md p-4 gap-4 h-1/3 shadow'>
+    <div className='w-full flex bg-white rounded-md p-4 gap-4 h-1/3'>
       <div className='w-1/2 flex flex-col gap-3'>
         <p className='text-lg font-bold text-red-500'>매도</p>
         <div className='flex flex-col gap-2'>
