@@ -6,7 +6,7 @@ import { redirect } from 'next/navigation';
 
 const signInWith = (provider: Provider) => async () => {
   const supabase = await createClientForServer();
-  const auth_callback_url = `${process.env.SITE_URL}/auth/callback`;
+  const auth_callback_url = `${process.env.NEXT_PUBLIC_APP_URL}/auth/callback`;
 
   const { data, error } = await supabase.auth.signInWithOAuth({
     provider,
