@@ -13,7 +13,7 @@ export default function SymbolListItem({ symbol, currency }: Props) {
   const changePercent =
     ((Number(symbol.c) - Number(symbol.o)) / Number(symbol.o)) * 100;
   return (
-    <Link href={`/en/trade/${symbol.s}`}>
+    <Link href={`/trade/${symbol.s}`}>
       <div className='py-2 px-3 flex justify-between hover:bg-gray-100 text-xs'>
         <p>{symbol.s.replace(currency, `/${currency}`)}</p>
         <div className='flex gap-5 text-center items-center'>

@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from 'react';
 import SymbolSearchBar from './symbolSearchBar';
-import SymbolSortDropdown from '@/app/en/trade/[name]/_components/symbolSortDropdown';
 import { SORT_MENU } from '@/lib/menu';
 import { useWebSocketStore } from '@/store/useWebsocketStore';
 import SymbolListItem from './symbolListItem';
@@ -11,6 +10,7 @@ import CurrencyContainer from './currencyContainer';
 import { fetchSymbolList } from '@/app/api/totalList/helper';
 import { convertToMiniTicker } from '@/utils/convertToMiniTicker';
 import { DEFAULT_CURRENCY } from '@/lib/constance';
+import SymbolSortDropdown from './symbolSortDropdown';
 
 export default function SymbolList() {
   const [currency, setCurrency] = useState(DEFAULT_CURRENCY);

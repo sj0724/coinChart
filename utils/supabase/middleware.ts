@@ -38,7 +38,7 @@ export async function updateSession(request: NextRequest) {
     return NextResponse.redirect(new URL('/', request.url));
   }
   if (isMainPage && user.user) {
-    return NextResponse.redirect(new URL('/en/trade/BTCUSDT', request.url));
+    return NextResponse.redirect(new URL('/trade/BTCUSDT', request.url));
   }
 
   return supabaseResponse;

@@ -6,7 +6,7 @@ import { supabase } from '@/utils/supabase';
 export async function GET(request: NextRequest) {
   const { searchParams, origin } = new URL(request.url);
   const code = searchParams.get('code');
-  const next = '/en/trade/BTCUSDT'; // 원하는 경로로 설정
+  const next = '/trade/BTCUSDT'; // 원하는 경로로 설정
 
   if (code) {
     const supabaseServer = await createClientForServer();
