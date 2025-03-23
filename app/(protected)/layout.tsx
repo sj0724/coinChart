@@ -31,9 +31,9 @@ export default function Layout({ children }: { children: ReactNode }) {
     <>
       <nav className='sticky top-0 right-0 w-full flex justify-center bg-white z-50'>
         <div className='flex items-center w-full h-16 px-4 justify-between shadow rounded border'>
-          <div className='flex items-center gap-3 text-sm md:text-lg font-semibold'>
+          <div className='flex items-center gap-3 text-xs md:text-lg font-semibold'>
             <Link href='/trade/BTCUSDT'>
-              <span className='rounded-full bg-yellow-400 w-10 h-10 items-center flex justify-center'>
+              <span className='rounded-full bg-yellow-400 md:w-10 w-7 md:h-10 h-7 items-center flex justify-center'>
                 <BitcoinIcon width={25} height={25} />
               </span>
             </Link>
@@ -50,7 +50,7 @@ export default function Layout({ children }: { children: ReactNode }) {
             </p>
             <span>내 자산: ${userInvest}</span>
           </div>
-          <div className='flex gap-6'>
+          <div className='flex gap-3 md:gap-6'>
             <Link href='/order-list'>
               <ListOrderedIcon width={25} height={25} />
             </Link>
