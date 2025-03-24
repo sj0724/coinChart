@@ -1,9 +1,10 @@
 'use client';
 
+import { createOrder, getOrder, TradeOrder } from '@/app/api/order/helper';
 import Button from '@/components/button';
+import { useToast } from '@/hooks/use-toast';
 import useCoinStore from '@/store/useCoinStore';
-import useOrderStore, { OrderType } from '@/store/useOrderStore';
-import { orderCalculator } from '@/utils/orderCalculator';
+// import useOrderStore from '@/store/useOrderStore';
 import { ChangeEvent, useEffect, useState } from 'react';
 
 interface Props {
@@ -12,38 +13,52 @@ interface Props {
 
 export default function TradingBoard({ symbol }: Props) {
   const { price, amountBid, amountAsk } = useCoinStore();
-  const setOrder = useOrderStore((state) => state.setOrder);
-
-  const [askOrder, setAskOrder] = useState({ price: 0, amount: 0 });
-  const [bidOrder, setBidOrder] = useState({ price: 0, amount: 0 });
-
+  // const setOrder = useOrderStore((state) => state.setOrder);
+  const [askOrder, setAskOrder] = useState<TradeOrder | null>(null);
+  const [bidOrder, setBidOrder] = useState<TradeOrder | null>(null);
+  const { toast } = useToast();
   const handleChange = (
     e: ChangeEvent<HTMLInputElement>,
     type: 'ask' | 'bid',
     field: 'price' | 'amount'
   ) => {
     const value = Number(e.target.value);
+    if (isNaN(value) || value < 0) return;
+
     if (type === 'ask') {
-      setAskOrder((prev) => ({ ...prev, [field]: value }));
+      setAskOrder((prev) =>
+        prev
+          ? { ...prev, [field]: value }
+          : { symbol: '', price: 0, amount: 0, type: 'ASK' }
+      );
     } else {
-      setBidOrder((prev) => ({ ...prev, [field]: value }));
+      setBidOrder((prev) =>
+        prev
+          ? { ...prev, [field]: value }
+          : { symbol: '', price: 0, amount: 0, type: 'BID' }
+      );
     }
   };
 
-  const handleTrade = (type: OrderType) => {
-    const order = type === 'ask' ? askOrder : bidOrder;
-    console.log(order);
-    if (type === 'bid') {
-      orderCalculator('bid', order, symbol);
-    } else {
-      setOrder(type, order);
+  const handleTrade = (type: 'ASK' | 'BID') => {
+    const order = type === 'ASK' ? askOrder : bidOrder;
+    if (order) {
+      createOrder(order);
+      toast({
+        description: `${order.symbol} : ${order.price} ${order.amount}`,
+      });
     }
   };
 
   useEffect(() => {
-    setAskOrder({ price: price, amount: amountAsk });
-    setBidOrder({ price: price, amount: amountBid });
-  }, [amountAsk, amountBid, price]);
+    setAskOrder({ price: price, amount: amountAsk, symbol, type: 'ASK' });
+    setBidOrder({ price: price, amount: amountBid, symbol, type: 'BID' });
+    const test = async () => {
+      const result = await getOrder();
+      console.log(result);
+    };
+    test();
+  }, [amountAsk, amountBid, price, symbol]);
 
   return (
     <div className='w-full flex bg-white rounded-md p-4 gap-4 h-1/3'>
@@ -56,7 +71,7 @@ export default function TradingBoard({ symbol }: Props) {
               type='number'
               min={0.01}
               step={0.01}
-              value={askOrder.price}
+              value={askOrder ? askOrder.price : 0}
               onChange={(e) => handleChange(e, 'ask', 'price')}
               className='text-right w-24 border-none focus:outline-none'
             />
@@ -67,13 +82,13 @@ export default function TradingBoard({ symbol }: Props) {
               type='number'
               min={0.00001}
               step={0.00001}
-              value={askOrder.amount}
+              value={askOrder ? askOrder.amount : 0}
               onChange={(e) => handleChange(e, 'ask', 'amount')}
               className='text-right w-24 border-none focus:outline-none'
             />
           </div>
         </div>
-        <Button color='red' onClick={() => handleTrade('ask')}>
+        <Button color='red' onClick={() => handleTrade('ASK')}>
           매도하기
         </Button>
       </div>
@@ -86,7 +101,7 @@ export default function TradingBoard({ symbol }: Props) {
               type='number'
               min={0.01}
               step={0.01}
-              value={bidOrder.price}
+              value={bidOrder ? bidOrder.price : 0}
               onChange={(e) => handleChange(e, 'bid', 'price')}
               className='text-right w-24 border-none focus:outline-none'
             />
@@ -97,13 +112,13 @@ export default function TradingBoard({ symbol }: Props) {
               type='number'
               min={0.00001}
               step={0.00001}
-              value={bidOrder.amount}
+              value={bidOrder ? bidOrder.amount : 0}
               onChange={(e) => handleChange(e, 'bid', 'amount')}
               className='text-right w-24 border-none focus:outline-none'
             />
           </div>
         </div>
-        <Button color='green' onClick={() => handleTrade('bid')}>
+        <Button color='green' onClick={() => handleTrade('BID')}>
           매수하기
         </Button>
       </div>
