@@ -2,18 +2,20 @@
 
 import { getUserData } from '@/app/api/user/helper';
 import LogoutButton from '@/components/logoutButton';
+import useOrderStore from '@/store/useOrderStore';
 import { BitcoinIcon, ListOrderedIcon, Wallet } from 'lucide-react';
 import Link from 'next/link';
 import { ReactNode, useEffect, useState } from 'react';
+import { getOrder } from '../api/order/helper';
 
 export default function Layout({ children }: { children: ReactNode }) {
+  const setOrder = useOrderStore((state) => state.setOrder);
   const [userInvest, setUserInvest] = useState(0);
   const [changePercent, setChangePercent] = useState(0);
 
   useEffect(() => {
     const fetchData = async () => {
       const user = await getUserData();
-
       if (user) {
         setUserInvest(user.invest || 0);
         const percent =
@@ -23,8 +25,20 @@ export default function Layout({ children }: { children: ReactNode }) {
         setChangePercent(percent);
       }
     };
-
     fetchData();
+  }, []);
+
+  useEffect(() => {
+    const fetchUserOrder = async () => {
+      const result = await getOrder();
+      if (result) {
+        const askList = result.filter((item) => item.type === 'ASK');
+        const bidList = result.filter((item) => item.type === 'BID');
+        setOrder('ask', askList);
+        setOrder('bid', bidList);
+      }
+    };
+    fetchUserOrder();
   }, []);
 
   return (
