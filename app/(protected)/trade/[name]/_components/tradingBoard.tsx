@@ -1,19 +1,28 @@
 'use client';
 
-import { createOrder, getOrder, TradeOrder } from '@/app/api/order/helper';
+import { createOrder } from '@/app/api/order/helper';
 import Button from '@/components/button';
 import { useToast } from '@/hooks/use-toast';
 import useCoinStore from '@/store/useCoinStore';
-// import useOrderStore from '@/store/useOrderStore';
+import useOrderStore from '@/store/useOrderStore';
 import { ChangeEvent, useEffect, useState } from 'react';
 
 interface Props {
   symbol: string;
 }
 
+export type TradeType = 'ASK' | 'BID';
+
+export type TradeOrder = {
+  symbol: string;
+  price: number;
+  amount: number;
+  type: TradeType;
+};
+
 export default function TradingBoard({ symbol }: Props) {
   const { price, amountBid, amountAsk } = useCoinStore();
-  // const setOrder = useOrderStore((state) => state.setOrder);
+  const setOrder = useOrderStore((state) => state.setOrder);
   const [askOrder, setAskOrder] = useState<TradeOrder | null>(null);
   const [bidOrder, setBidOrder] = useState<TradeOrder | null>(null);
   const { toast } = useToast();
@@ -40,10 +49,13 @@ export default function TradingBoard({ symbol }: Props) {
     }
   };
 
-  const handleTrade = (type: 'ASK' | 'BID') => {
+  const handleTrade = async (type: TradeType) => {
     const order = type === 'ASK' ? askOrder : bidOrder;
     if (order) {
-      createOrder(order);
+      const result = await createOrder(order);
+      if (result) {
+        setOrder(type, [result]);
+      }
       toast({
         description: `${order.symbol} : ${order.price} ${order.amount}`,
       });
@@ -51,13 +63,13 @@ export default function TradingBoard({ symbol }: Props) {
   };
 
   useEffect(() => {
-    setAskOrder({ price: price, amount: amountAsk, symbol, type: 'ASK' });
+    setAskOrder({
+      price: price,
+      amount: amountAsk,
+      symbol,
+      type: 'ASK',
+    });
     setBidOrder({ price: price, amount: amountBid, symbol, type: 'BID' });
-    const test = async () => {
-      const result = await getOrder();
-      console.log(result);
-    };
-    test();
   }, [amountAsk, amountBid, price, symbol]);
 
   return (

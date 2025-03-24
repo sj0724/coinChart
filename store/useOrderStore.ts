@@ -1,61 +1,68 @@
 import { create } from 'zustand';
 import { useWebSocketStore } from './useWebsocketStore';
-import { orderCalculator } from '@/utils/orderCalculator';
-
-export type OrderType = 'ask' | 'bid';
-
-export type Order = {
-  price: number;
-  amount: number;
-};
+import { DbOrder } from '@/types/dbData';
+import { TradeType } from '@/app/(protected)/trade/[name]/_components/tradingBoard';
 
 interface State {
-  ask: Order;
-  bid: Order;
-  setOrder: (type: OrderType, order: Order) => void;
+  ask: DbOrder[];
+  bid: DbOrder[];
+  setOrder: (type: TradeType, order: DbOrder[]) => void;
   checkOrderMatch: () => void;
 }
 
 const useOrderStore = create<State>((set, get) => ({
-  ask: { price: 0, amount: 0 },
-  bid: { price: 0, amount: 0 },
+  ask: [],
+  bid: [],
   setOrder: (type, order) => {
-    if (type === 'ask') {
-      set({ ask: order });
+    const { ask, bid } = get();
+    if (type === 'ASK') {
+      if (ask.length > 0) {
+        set({ ask: [...ask, ...order] });
+      } else {
+        set({ ask: order });
+      }
     } else {
-      set({ bid: order });
+      if (bid.length > 0) {
+        set({ bid: [...bid, ...order] });
+      } else {
+        set({ bid: order });
+      }
     }
   },
   checkOrderMatch: () => {
     const { ask, bid } = get();
-    const { depthUpdate } = useWebSocketStore.getState();
-    const { symbol } = useWebSocketStore.getState();
+    const depthUpdate = useWebSocketStore.getState().depthUpdate;
     if (!depthUpdate) return;
 
-    const matchedAsk = depthUpdate.asks.find(
-      (order) => Number(order[0]) === ask.price
-    );
-    const matchedBid = depthUpdate.bids.find(
-      (order) => Number(order[0]) === bid.price
-    );
+    const updatedAsk = ask.filter((order) => {
+      const matchedAsk = depthUpdate.asks.find(
+        (depth) => Number(depth[0]) === order.price
+      );
+      if (matchedAsk) {
+        console.log('매도 주문 체결됨:', {
+          price: order.price,
+          amount: Math.min(order.amount, Number(matchedAsk[1])),
+        });
+        return false;
+      }
+      return true;
+    });
 
-    if (matchedAsk) {
-      const result = {
-        price: ask.price,
-        amount:
-          ask.amount >= Number(matchedAsk[1])
-            ? Number(matchedAsk[1])
-            : Number(matchedAsk[1]) - ask.amount,
-      };
-      orderCalculator('ask', result, symbol);
-      console.log('매도 주문 체결됨:', result);
-      set({ ask: { price: 0, amount: 0 } });
-    }
+    const updatedBid = bid.filter((order) => {
+      const matchedBid = depthUpdate.bids.find(
+        (depth) => Number(depth[0]) === order.price
+      );
+      if (matchedBid) {
+        console.log('매수 주문 체결됨:', {
+          price: order.price,
+          amount: Math.min(order.amount, Number(matchedBid[1])),
+        });
+        return false;
+      }
+      return true;
+    });
 
-    if (matchedBid) {
-      console.log('매수 주문 체결됨:', matchedBid);
-      set({ bid: { price: 0, amount: 0 } });
-    }
+    set({ ask: updatedAsk, bid: updatedBid });
   },
 }));
 
