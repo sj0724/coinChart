@@ -9,6 +9,47 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      order: {
+        Row: {
+          amount: number
+          created_at: string
+          id: string
+          price: number
+          succeed: boolean
+          symbol: string
+          type: Database["public"]["Enums"]["orderType"]
+          userId: string
+        }
+        Insert: {
+          amount?: number
+          created_at?: string
+          id?: string
+          price?: number
+          succeed?: boolean
+          symbol: string
+          type?: Database["public"]["Enums"]["orderType"]
+          userId?: string
+        }
+        Update: {
+          amount?: number
+          created_at?: string
+          id?: string
+          price?: number
+          succeed?: boolean
+          symbol?: string
+          type?: Database["public"]["Enums"]["orderType"]
+          userId?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "order_userId_fkey"
+            columns: ["userId"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       users: {
         Row: {
           created_at: string | null
@@ -76,7 +117,7 @@ export type Database = {
       [_ in never]: never
     }
     Enums: {
-      [_ in never]: never
+      orderType: "ASK" | "BID"
     }
     CompositeTypes: {
       [_ in never]: never
