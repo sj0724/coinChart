@@ -3,6 +3,7 @@ import { useWebSocketStore } from './useWebsocketStore';
 import { DbOrder } from '@/types/dbData';
 import { TradeType } from '@/app/(protected)/trade/[name]/_components/tradingBoard';
 import { succeedOrder } from '@/app/api/order/helper';
+import { updateWallet } from '@/app/api/wallet/helper';
 
 interface State {
   ask: DbOrder[];
@@ -35,7 +36,7 @@ const useOrderStore = create<State>((set, get) => ({
     const depthUpdate = useWebSocketStore.getState().depthUpdate;
     if (!depthUpdate) return;
 
-    const completedOrderIds: string[] = [];
+    const completedOrderList: DbOrder[] = [];
 
     const updatedAsk: DbOrder[] = ask.filter((order) => {
       const matchedAsk = depthUpdate.asks.find(
@@ -46,7 +47,11 @@ const useOrderStore = create<State>((set, get) => ({
           price: order.price,
           amount: Math.min(order.amount, Number(matchedAsk[1])),
         });
-        completedOrderIds.push(order.id);
+        const completedAsk = {
+          ...order,
+          amount: Math.min(order.amount, Number(matchedAsk[1])),
+        };
+        completedOrderList.push(completedAsk);
         return false;
       }
       return true;
@@ -61,7 +66,11 @@ const useOrderStore = create<State>((set, get) => ({
           price: order.price,
           amount: Math.min(order.amount, Number(matchedBid[1])),
         });
-        completedOrderIds.push(order.id);
+        const completedBid = {
+          ...order,
+          amount: Math.min(order.amount, Number(matchedBid[1])),
+        };
+        completedOrderList.push(completedBid);
         return false;
       }
       return true;
@@ -69,8 +78,13 @@ const useOrderStore = create<State>((set, get) => ({
 
     set({ ask: updatedAsk, bid: updatedBid });
 
-    if (completedOrderIds.length > 0) {
-      await Promise.all(completedOrderIds.map((id) => succeedOrder(id)));
+    if (completedOrderList.length > 0) {
+      await Promise.all(
+        completedOrderList.map((item) => {
+          succeedOrder(item.id);
+          updateWallet(item);
+        })
+      );
     }
   },
 }));
