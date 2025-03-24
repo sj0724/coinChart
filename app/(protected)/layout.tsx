@@ -32,8 +32,12 @@ export default function Layout({ children }: { children: ReactNode }) {
     const fetchUserOrder = async () => {
       const result = await getOrder();
       if (result) {
-        const askList = result.filter((item) => item.type === 'ASK');
-        const bidList = result.filter((item) => item.type === 'BID');
+        const askList = result.filter(
+          (item) => item.type === 'ASK' && !item.succeed
+        );
+        const bidList = result.filter(
+          (item) => item.type === 'BID' && !item.succeed
+        );
         setOrder('ASK', askList);
         setOrder('BID', bidList);
       }
