@@ -2,6 +2,7 @@ import { create } from 'zustand';
 import { useWebSocketStore } from './useWebsocketStore';
 import { DbOrder } from '@/types/dbData';
 import { TradeType } from '@/app/(protected)/trade/[name]/_components/tradingBoard';
+import { succeedOrder } from '@/app/api/order/helper';
 
 interface State {
   ask: DbOrder[];
@@ -29,12 +30,14 @@ const useOrderStore = create<State>((set, get) => ({
       }
     }
   },
-  checkOrderMatch: () => {
+  checkOrderMatch: async () => {
     const { ask, bid } = get();
     const depthUpdate = useWebSocketStore.getState().depthUpdate;
     if (!depthUpdate) return;
 
-    const updatedAsk = ask.filter((order) => {
+    const completedOrderIds: string[] = [];
+
+    const updatedAsk: DbOrder[] = ask.filter((order) => {
       const matchedAsk = depthUpdate.asks.find(
         (depth) => Number(depth[0]) === order.price
       );
@@ -43,12 +46,13 @@ const useOrderStore = create<State>((set, get) => ({
           price: order.price,
           amount: Math.min(order.amount, Number(matchedAsk[1])),
         });
+        completedOrderIds.push(order.id);
         return false;
       }
       return true;
     });
 
-    const updatedBid = bid.filter((order) => {
+    const updatedBid: DbOrder[] = bid.filter((order) => {
       const matchedBid = depthUpdate.bids.find(
         (depth) => Number(depth[0]) === order.price
       );
@@ -57,12 +61,17 @@ const useOrderStore = create<State>((set, get) => ({
           price: order.price,
           amount: Math.min(order.amount, Number(matchedBid[1])),
         });
+        completedOrderIds.push(order.id);
         return false;
       }
       return true;
     });
 
     set({ ask: updatedAsk, bid: updatedBid });
+
+    if (completedOrderIds.length > 0) {
+      await Promise.all(completedOrderIds.map((id) => succeedOrder(id)));
+    }
   },
 }));
 
