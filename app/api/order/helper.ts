@@ -2,13 +2,7 @@ import { BASE_BINANCE_URL } from '@/lib/constance';
 import { AggTradeData, Order } from '@/types/binance';
 import { supabase } from '@/utils/supabase';
 import { getUserData } from '../user/helper';
-
-export type TradeOrder = {
-  symbol: string;
-  price: number;
-  amount: number;
-  type: 'ASK' | 'BID';
-};
+import { TradeOrder } from '@/app/(protected)/trade/[name]/_components/tradingBoard';
 
 export const fetchDepthList = async (symbol: string) => {
   try {
@@ -60,17 +54,26 @@ export const getOrder = async () => {
 export const createOrder = async (order: TradeOrder) => {
   const userData = await getUserData();
   if (userData) {
-    const { data } = await supabase.from('order').insert({
-      userId: userData.id,
-      symbol: order.symbol,
-      price: order.price,
-      amount: order.amount,
-      type: order.type,
-    });
-    if (data) {
-      return { success: true };
-    } else {
-      return { success: true };
+    const result = await supabase
+      .from('order')
+      .insert({
+        userId: userData.id,
+        symbol: order.symbol,
+        price: order.price,
+        amount: order.amount,
+        type: order.type,
+      })
+      .select();
+    if (result.status === 201 && result.data) {
+      return result.data[0];
     }
   }
+};
+
+export const succeedOrder = async (id: string) => {
+  const result = await supabase
+    .from('order')
+    .update({ succeed: true })
+    .eq('id', id);
+  return result;
 };
