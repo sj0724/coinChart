@@ -81,8 +81,8 @@ const useOrderStore = create<State>((set, get) => ({
     if (completedOrderList.length > 0) {
       await Promise.all(
         completedOrderList.map((item) => {
-          succeedOrder(item.id);
           updateWallet(item);
+          succeedOrder(item.id);
         })
       );
     }

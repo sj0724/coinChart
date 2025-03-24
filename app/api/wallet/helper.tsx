@@ -2,6 +2,19 @@ import { DbOrder } from '@/types/dbData';
 import { getUserData } from '../user/helper';
 import { supabase } from '@/utils/supabase';
 
+export const getWallet = async () => {
+  const user = await getUserData();
+  if (!user) return;
+  const wallet = await supabase
+    .from('wallet')
+    .select('*')
+    .eq('user_id', user.id);
+
+  if (wallet.data) {
+    return wallet.data;
+  }
+};
+
 export const updateWallet = async (order: DbOrder) => {
   const user = await getUserData();
   if (!user) return;
