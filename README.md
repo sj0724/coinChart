@@ -1,7 +1,7 @@
 # Coin Chart
 ![스크린샷 2025-02-25 오전 10 31 17](https://github.com/user-attachments/assets/b8d4fe0a-f91c-4ab0-9a69-d334c976a430)
 - 소개 : Binance API과 Lightweight Charts를 활용한 가상 화폐 차트
-- URL : <a href='https://coin-chart-mauve.vercel.app/en/trade/BTCUSDT'>https://coin-chart-mauve.vercel.app/en/trade/BTCUSDT</a>
+- URL : <a href='https://coin-chart-mauve.vercel.app'>https://coin-chart-mauve.vercel.app</a>
 
 ## 목표
 1. 현재 거래중인 자산 확인 - 검색 및 정렬 기능
