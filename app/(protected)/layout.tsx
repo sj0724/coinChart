@@ -5,31 +5,29 @@ import LogoutButton from '@/components/logoutButton';
 import useOrderStore from '@/store/useOrderStore';
 import { BitcoinIcon, ListOrderedIcon, Wallet } from 'lucide-react';
 import Link from 'next/link';
-import { ReactNode, useEffect, useState } from 'react';
+import { ReactNode, useEffect } from 'react';
 import { getOrder } from '../api/order/helper';
+import { useQuery } from '@tanstack/react-query';
 
 export default function Layout({ children }: { children: ReactNode }) {
   const setOrder = useOrderStore((state) => state.setOrder);
-  const [userInvest, setUserInvest] = useState(0);
-  const [changePercent, setChangePercent] = useState(0);
 
-  useEffect(() => {
-    const fetchData = async () => {
-      const user = await getUserData();
-      if (user) {
-        setUserInvest(user.invest || 0);
-        const percent =
-          user.invest && user.start_invest
-            ? ((user.invest - user.start_invest) / user.start_invest) * 100
-            : 0;
-        setChangePercent(percent);
-      }
-    };
-    fetchData();
-  }, []);
+  const { data: userData } = useQuery({
+    // 유저 데이터 캐싱
+    queryKey: ['userData'],
+    queryFn: () => getUserData(),
+    staleTime: 1000 * 5, // 5초 동안은 캐싱된 데이터 사용, 최신 데이터를 위한 짧은 유효 시간
+  });
+
+  const percent =
+    userData?.invest && userData?.start_invest
+      ? ((userData.invest - userData.start_invest) / userData.start_invest) *
+        100
+      : 0;
 
   useEffect(() => {
     const fetchUserOrder = async () => {
+      // 실시간 데이터 비교를 위한 db 주문 데이터 패칭
       const result = await getOrder();
       if (result) {
         const askList = result.filter(
@@ -60,13 +58,13 @@ export default function Layout({ children }: { children: ReactNode }) {
               수익률 :
               <span
                 className={`${
-                  changePercent >= 0 ? 'text-green-500' : 'text-red-500'
+                  percent >= 0 ? 'text-green-500' : 'text-red-500'
                 }`}
               >
-                {changePercent.toFixed(2)}%
+                {percent.toFixed(2)}%
               </span>
             </p>
-            <span>내 자산: ${userInvest}</span>
+            <span>내 자산: ${userData?.invest}</span>
           </div>
           <div className='flex gap-3 md:gap-6'>
             <Link href='/order-list'>

@@ -1,11 +1,14 @@
 'use client';
 
 import { createOrder } from '@/app/api/order/helper';
+import { getUserData } from '@/app/api/user/helper';
+import { getWallet } from '@/app/api/wallet/helper';
 import Button from '@/components/button';
-import { useToast } from '@/hooks/use-toast';
 import useCoinStore from '@/store/useCoinStore';
 import useOrderStore from '@/store/useOrderStore';
+import { useQuery } from '@tanstack/react-query';
 import { ChangeEvent, useEffect, useState } from 'react';
+import { toast } from 'sonner';
 
 interface Props {
   symbol: string;
@@ -23,9 +26,19 @@ export type TradeOrder = {
 export default function TradingBoard({ symbol }: Props) {
   const { price, amountBid, amountAsk } = useCoinStore();
   const setOrder = useOrderStore((state) => state.setOrder);
+  const { refetch: refetchUserData } = useQuery({
+    queryKey: ['userData'],
+    queryFn: () => getUserData(),
+    staleTime: 1000 * 5, // 5초 동안은 캐싱된 데이터 사용, 최신 데이터를 위한 짧은 유효 시간
+  });
+
+  const { refetch: refetchWallet } = useQuery({
+    queryKey: ['wallet'],
+    queryFn: () => getWallet(),
+    staleTime: 1000 * 5,
+  });
   const [askOrder, setAskOrder] = useState<TradeOrder | null>(null);
   const [bidOrder, setBidOrder] = useState<TradeOrder | null>(null);
-  const { toast } = useToast();
   const handleChange = (
     e: ChangeEvent<HTMLInputElement>,
     type: 'ask' | 'bid',
@@ -51,14 +64,36 @@ export default function TradingBoard({ symbol }: Props) {
 
   const handleTrade = async (type: TradeType) => {
     const order = type === 'ASK' ? askOrder : bidOrder;
-    if (order) {
+    if (!order) return;
+
+    try {
+      // 최신 데이터 가져오기 (병렬 실행)
+      const [{ data: latestUserData }, { data: latestWalletData }] =
+        await Promise.all([refetchUserData(), refetchWallet()]);
+
+      if (type === 'BID' && latestUserData) {
+        if (latestUserData.invest! < order.price * order.amount) {
+          return toast.error('소유한 자산이 부족합니다.');
+        }
+      } else if (type === 'ASK' && latestWalletData) {
+        const filterWallet = latestWalletData.find(
+          (item) => item.symbol === symbol
+        );
+        if (!filterWallet || filterWallet.amount < order.amount) {
+          return toast.error('소유한 자산이 부족합니다.');
+        }
+      }
+
+      // 주문 요청
       const result = await createOrder(order);
       if (result) {
         setOrder(type, [result]);
+        toast.success(`${order.symbol} : ${order.price} ${order.amount}`);
+        await Promise.all([refetchUserData(), refetchWallet()]); // 최신 데이터 다시 가져오기
       }
-      toast({
-        description: `${order.symbol} : ${order.price} ${order.amount}`,
-      });
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    } catch (error) {
+      toast.error('거래 처리 중 오류가 발생했습니다.');
     }
   };
 
