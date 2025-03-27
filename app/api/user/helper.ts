@@ -1,5 +1,6 @@
 'use server';
 
+import { supabase } from '@/utils/supabase';
 import { createClientForServer } from '@/utils/supabase/server';
 
 export const getUserData = async () => {
@@ -14,5 +15,15 @@ export const getUserData = async () => {
     if (data) {
       return data[0];
     }
+  }
+};
+
+export const updateUserData = async (newAsset: number) => {
+  const user = await getUserData();
+  if (user) {
+    await supabase
+      .from('users')
+      .update({ invest: user.invest! + newAsset })
+      .eq('id', user.id);
   }
 };

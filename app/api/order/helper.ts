@@ -1,8 +1,9 @@
 import { BASE_BINANCE_URL } from '@/lib/constance';
 import { AggTradeData, Order } from '@/types/binance';
 import { supabase } from '@/utils/supabase';
-import { getUserData } from '../user/helper';
+import { getUserData, updateUserData } from '../user/helper';
 import { TradeOrder } from '@/app/(protected)/trade/[name]/_components/tradingBoard';
+import { getWallet, updateWallet } from '../wallet/helper';
 
 export const fetchDepthList = async (symbol: string) => {
   try {
@@ -51,6 +52,30 @@ export const getOrder = async () => {
   }
 };
 
+export const getSuccessOrder = async () => {
+  const userData = await getUserData();
+  if (userData) {
+    const { data } = await supabase
+      .from('order')
+      .select('*')
+      .eq('userId', userData?.id)
+      .eq('succeed', true);
+    return data;
+  }
+};
+
+export const getHoldingOrder = async () => {
+  const userData = await getUserData();
+  if (userData) {
+    const { data } = await supabase
+      .from('order')
+      .select('*')
+      .eq('userId', userData?.id)
+      .eq('succeed', false);
+    return data;
+  }
+};
+
 export const createOrder = async (order: TradeOrder) => {
   const userData = await getUserData();
   if (userData) {
@@ -63,9 +88,26 @@ export const createOrder = async (order: TradeOrder) => {
         amount: order.amount,
         type: order.type,
       })
-      .select();
+      .select()
+      .single();
     if (result.status === 201 && result.data) {
-      return result.data[0];
+      if (order.type === 'BID') {
+        await supabase
+          .from('users')
+          .update({ invest: userData.invest! - order.price * order.amount })
+          .eq('id', userData.id);
+      } else {
+        const walletList = await getWallet();
+        const filteredWallet = walletList?.find(
+          (item) => item.symbol === order.symbol
+        );
+        if (!filteredWallet) return;
+        await supabase
+          .from('wallet')
+          .update({ amount: filteredWallet.amount - order.amount })
+          .eq('id', filteredWallet.id);
+      }
+      return result.data;
     }
   }
 };
@@ -76,4 +118,21 @@ export const succeedOrder = async (id: string) => {
     .update({ succeed: true })
     .eq('id', id);
   return result;
+};
+
+export const cancelOrder = async (id: string) => {
+  const result = await supabase
+    .from('order')
+    .delete()
+    .eq('id', id)
+    .select()
+    .single();
+  if (result.data) {
+    if (result.data.type === 'ASK') {
+      updateWallet(result.data);
+    } else {
+      const returnInvest = result.data.amount * result.data.price;
+      updateUserData(returnInvest);
+    }
+  }
 };

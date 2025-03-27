@@ -4,6 +4,7 @@ import { DbOrder } from '@/types/dbData';
 import { TradeType } from '@/app/(protected)/trade/[name]/_components/tradingBoard';
 import { succeedOrder } from '@/app/api/order/helper';
 import { updateWallet } from '@/app/api/wallet/helper';
+import { updateUserData } from '@/app/api/user/helper';
 
 interface State {
   ask: DbOrder[];
@@ -81,7 +82,11 @@ const useOrderStore = create<State>((set, get) => ({
     if (completedOrderList.length > 0) {
       await Promise.all(
         completedOrderList.map((item) => {
-          updateWallet(item);
+          if (item.type === 'ASK') {
+            updateUserData(item.price * item.amount); // 매도 체결시, 자산 증가
+          } else {
+            updateWallet(item); // 매수 체결시, 지갑 자산 증가
+          }
           succeedOrder(item.id);
         })
       );
