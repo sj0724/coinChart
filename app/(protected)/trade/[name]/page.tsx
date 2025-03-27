@@ -22,10 +22,7 @@ export default function Page({
   }, [symbolName]);
 
   return (
-    <div
-      className='grid w-full max-w-[1500px] gap-2 p-2 
-                    grid-cols-1 md:grid-cols-3 xl:grid-cols-5 xl:h-[950px] h-fit'
-    >
+    <div className='grid w-full max-w-[1500px] gap-2 p-2 grid-cols-1 md:grid-cols-3 xl:grid-cols-5 xl:h-[950px] h-fit'>
       <OrderBookContainer symbolName={symbolName} />
       <div className='flex flex-col gap-2 md:col-span-2 xl:col-span-3 h-fit'>
         <SymbolInfo symbol={symbolName} />
