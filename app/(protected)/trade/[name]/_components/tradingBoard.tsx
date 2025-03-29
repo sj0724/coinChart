@@ -108,9 +108,9 @@ export default function TradingBoard({ symbol }: Props) {
   }, [amountAsk, amountBid, price, symbol]);
 
   return (
-    <div className='w-full flex bg-white rounded-md p-4 gap-4 h-1/3'>
+    <div className='w-full flex bg-white rounded-md p-4 gap-4 h-1/3 text-sm md:text-base'>
       <div className='w-1/2 flex flex-col gap-3'>
-        <p className='text-lg font-bold text-red-500'>매도</p>
+        <p className='text-base md:text-lg font-bold text-red-500'>매도</p>
         <div className='flex flex-col gap-2'>
           <div className='flex justify-between border rounded-md p-2'>
             <p>Price :</p>
@@ -124,7 +124,7 @@ export default function TradingBoard({ symbol }: Props) {
             />
           </div>
           <div className='flex justify-between border rounded-md p-2'>
-            <p>Amount :</p>
+            <p className='text-nowrap'>Amount :</p>
             <input
               type='number'
               min={0.00001}
@@ -140,8 +140,8 @@ export default function TradingBoard({ symbol }: Props) {
         </Button>
       </div>
       <div className='w-1/2 flex flex-col gap-3'>
-        <p className='text-lg font-bold text-green-500'>매수</p>
-        <div className='flex flex-col gap-2'>
+        <p className='text-base md:text-lg font-bold text-green-500'>매수</p>
+        <div className='flex flex-col gap-2 '>
           <div className='flex justify-between border rounded-md p-2'>
             <p>Price :</p>
             <input
@@ -154,7 +154,7 @@ export default function TradingBoard({ symbol }: Props) {
             />
           </div>
           <div className='flex justify-between border rounded-md p-2'>
-            <p>Amount :</p>
+            <p className='text-nowrap'>Amount :</p>
             <input
               type='number'
               min={0.00001}
