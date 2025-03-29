@@ -1,13 +1,13 @@
 'use client';
 
 import { getUserData } from '@/app/api/user/helper';
-import LogoutButton from '@/components/logoutButton';
 import useOrderStore from '@/store/useOrderStore';
-import { BitcoinIcon, ListOrderedIcon, Wallet } from 'lucide-react';
+import { BitcoinIcon } from 'lucide-react';
 import Link from 'next/link';
 import { ReactNode, useEffect } from 'react';
 import { getOrder } from '../api/order/helper';
 import { useQuery } from '@tanstack/react-query';
+import NavMenu from './_components/navMenu';
 
 export default function Layout({ children }: { children: ReactNode }) {
   const setOrder = useOrderStore((state) => state.setOrder);
@@ -66,15 +66,7 @@ export default function Layout({ children }: { children: ReactNode }) {
             </p>
             <span>내 자산: ${userData?.invest}</span>
           </div>
-          <div className='flex gap-3 md:gap-6'>
-            <Link href='/order-list'>
-              <ListOrderedIcon width={25} height={25} />
-            </Link>
-            <Link href='/wallet'>
-              <Wallet width={25} height={25} />
-            </Link>
-            <LogoutButton />
-          </div>
+          <NavMenu />
         </div>
       </nav>
       {children}

@@ -5,7 +5,11 @@ import { useWebSocketStore } from '@/store/useWebsocketStore';
 import { LogOutIcon } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 
-export default function LogoutButton() {
+interface Props {
+  type: 'button' | 'icon';
+}
+
+export default function LogoutButton({ type }: Props) {
   const router = useRouter();
   const disconnectWebSocket = useWebSocketStore(
     (state) => state.disconnectWebSocket
@@ -19,7 +23,7 @@ export default function LogoutButton() {
 
   return (
     <button onClick={handleClick}>
-      <LogOutIcon width={25} height={25} />
+      {type === 'button' ? '로그아웃' : <LogOutIcon width={25} height={25} />}
     </button>
   );
 }
