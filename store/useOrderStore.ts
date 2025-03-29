@@ -5,6 +5,7 @@ import { TradeType } from '@/app/(protected)/trade/[name]/_components/tradingBoa
 import { succeedOrder } from '@/app/api/order/helper';
 import { updateWallet } from '@/app/api/wallet/helper';
 import { updateUserData } from '@/app/api/user/helper';
+import { toast } from 'sonner';
 
 interface State {
   ask: DbOrder[];
@@ -44,10 +45,6 @@ const useOrderStore = create<State>((set, get) => ({
         (depth) => Number(depth[0]) === order.price
       );
       if (matchedAsk) {
-        console.log('매도 주문 체결됨:', {
-          price: order.price,
-          amount: Math.min(order.amount, Number(matchedAsk[1])),
-        });
         const completedAsk = {
           ...order,
           amount: Math.min(order.amount, Number(matchedAsk[1])),
@@ -63,10 +60,6 @@ const useOrderStore = create<State>((set, get) => ({
         (depth) => Number(depth[0]) === order.price
       );
       if (matchedBid) {
-        console.log('매수 주문 체결됨:', {
-          price: order.price,
-          amount: Math.min(order.amount, Number(matchedBid[1])),
-        });
         const completedBid = {
           ...order,
           amount: Math.min(order.amount, Number(matchedBid[1])),
@@ -84,8 +77,10 @@ const useOrderStore = create<State>((set, get) => ({
         completedOrderList.map((item) => {
           if (item.type === 'ASK') {
             updateUserData(item.price * item.amount); // 매도 체결시, 자산 증가
+            toast.success(`매도 주문 체결 : ${item.price} / ${item.amount}`);
           } else {
             updateWallet(item); // 매수 체결시, 지갑 자산 증가
+            toast.success(`매수 주문 체결 : ${item.price} / ${item.amount}`);
           }
           succeedOrder(item.id);
         })

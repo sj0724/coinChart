@@ -88,7 +88,7 @@ export default function TradingBoard({ symbol }: Props) {
       const result = await createOrder(order);
       if (result) {
         setOrder(type, [result]);
-        toast.success(`${order.symbol} : ${order.price} ${order.amount}`);
+        toast.success(`${order.symbol} : ${order.price} / ${order.amount}`);
         await Promise.all([refetchUserData(), refetchWallet()]); // 최신 데이터 다시 가져오기
       }
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
