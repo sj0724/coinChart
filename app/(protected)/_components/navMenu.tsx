@@ -29,16 +29,14 @@ export default function NavMenu() {
         {isOpen && (
           <div className='absolute left-0 top-full w-screen flex flex-col items-center bg-white p-3 shadow-lg'>
             <div className='h-10 flex flex-col justify-center items-center cursor-pointer hover:bg-gray-100 w-full font-semibold rounded-lg'>
-              <Link
-                href='/order-list'
-                onClick={() => setIsOpen(false)}
-                className=''
-              >
+              <Link href='/order-list' onClick={() => setIsOpen(false)}>
                 거래 내역
               </Link>
             </div>
             <div className='h-10 flex flex-col justify-center items-center cursor-pointer hover:bg-gray-100 w-full font-semibold rounded-lg'>
-              <Link href='/wallet'>지갑</Link>
+              <Link href='/wallet' onClick={() => setIsOpen(false)}>
+                지갑
+              </Link>
             </div>
             <div className='h-10 flex flex-col justify-center items-center cursor-pointer hover:bg-gray-100 w-full font-semibold rounded-lg'>
               <LogoutButton type='button' />
