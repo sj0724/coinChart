@@ -7,7 +7,7 @@ export default async function Page() {
   const successData = await getSuccessOrder();
 
   return (
-    <div className='flex gap-2 h-[calc(100vh-64px)] p-2 w-full items-center justify-center'>
+    <div className='flex flex-col md:flex-row gap-2 h-[calc(100vh-64px)] p-2 w-full items-center md:justify-center'>
       <SuccessOrderList data={successData} />
       <HoldingOrderList data={holdingData} />
     </div>
