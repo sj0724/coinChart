@@ -49,7 +49,7 @@ export default function SuccessOrderList({ totalCount, data }: Props) {
     }
   }, [data]);
 
-  if (!data || data.length === 0)
+  if (!data || orderList.length === 0)
     return (
       <div className='flex flex-col bg-white p-2 gap-2 rounded w-full max-w-[400px] min-h-[500px] h-full'>
         <p className='font-bold text-lg p-2 border-b'>체결 완료</p>

@@ -3,22 +3,23 @@
 import { cancelOrder } from '@/app/api/order/helper';
 import { DbOrder } from '@/types/dbData';
 import { X } from 'lucide-react';
-import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
 
 interface Props {
   order: DbOrder;
+  handleClick?: (id: string) => void;
 }
 
-export default function OrderItem({ order }: Props) {
-  const router = useRouter();
-  const handleClick = () => {
+export default function OrderItem({ order, handleClick }: Props) {
+  const onClick = () => {
     toast.promise(cancelOrder(order.id), {
       loading: 'Loading...',
       success: '주문이 취소되었습니다.',
       error: '주문 취소중 에러가 발생했습니다.',
     });
-    router.refresh();
+    if (handleClick) {
+      handleClick(order.id);
+    }
   };
 
   return (
@@ -38,7 +39,7 @@ export default function OrderItem({ order }: Props) {
             width={15}
             height={15}
             className='cursor-pointer'
-            onClick={handleClick}
+            onClick={onClick}
           />
         )}
       </div>

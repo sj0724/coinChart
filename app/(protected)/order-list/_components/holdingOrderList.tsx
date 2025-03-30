@@ -34,6 +34,11 @@ export default function HoldingOrderList({ totalCount, data }: Props) {
     isNext,
   });
 
+  const cancelOrder = (id: string) => {
+    const filterList = orderList.filter((item) => item.id !== id);
+    setOrderList(filterList);
+  };
+
   useEffect(() => {
     if (totalCount === orderList.length) {
       setIsNext(false);
@@ -49,7 +54,7 @@ export default function HoldingOrderList({ totalCount, data }: Props) {
     }
   }, [data]);
 
-  if (!data || data.length === 0)
+  if (!data || orderList.length === 0)
     return (
       <div className='flex flex-col bg-white p-2 gap-2 rounded w-full max-w-[400px] min-h-[500px] h-full'>
         <p className='font-bold text-lg p-2 border-b'>체결 대기</p>
@@ -65,7 +70,7 @@ export default function HoldingOrderList({ totalCount, data }: Props) {
       <ul className='flex flex-col gap-2 overflow-y-scroll'>
         {orderList.map((item) => (
           <li key={item.id}>
-            <OrderItem order={item} />
+            <OrderItem order={item} handleClick={cancelOrder} />
           </li>
         ))}
         {isPending && <OrderSkeleton />}
