@@ -4,11 +4,14 @@ import SuccessOrderList from './_components/successOrderList';
 
 export default async function Page() {
   const holdingData = await getHoldingOrder();
-  const successData = await getSuccessOrder();
+  const successData = await getSuccessOrder(1, 15);
 
   return (
     <div className='flex flex-col md:flex-row gap-2 h-[calc(100vh-64px)] p-2 w-full items-center md:justify-center'>
-      <SuccessOrderList data={successData} />
+      <SuccessOrderList
+        data={successData.data}
+        totalCount={successData.totalCount}
+      />
       <HoldingOrderList data={holdingData} />
     </div>
   );
