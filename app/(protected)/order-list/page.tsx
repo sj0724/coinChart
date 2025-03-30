@@ -3,7 +3,7 @@ import HoldingOrderList from './_components/holdingOrderList';
 import SuccessOrderList from './_components/successOrderList';
 
 export default async function Page() {
-  const holdingData = await getHoldingOrder();
+  const holdingData = await getHoldingOrder(1, 15);
   const successData = await getSuccessOrder(1, 15);
 
   return (
@@ -12,7 +12,10 @@ export default async function Page() {
         data={successData.data}
         totalCount={successData.totalCount}
       />
-      <HoldingOrderList data={holdingData} />
+      <HoldingOrderList
+        data={holdingData.data}
+        totalCount={holdingData.totalCount}
+      />
     </div>
   );
 }

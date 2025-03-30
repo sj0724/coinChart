@@ -72,16 +72,23 @@ export const getSuccessOrder = async (page: number = 1, limit: number = 1) => {
   return { data: [], totalCount: 0 };
 };
 
-export const getHoldingOrder = async () => {
+export const getHoldingOrder = async (page: number = 1, limit: number = 1) => {
+  const start = (page - 1) * limit;
+  const end = page * limit - 1;
+
   const userData = await getUserData();
   if (userData) {
-    const { data } = await supabase
+    const { data, count } = await supabase
       .from('order')
-      .select('*')
+      .select('*', { count: 'exact' })
       .eq('userId', userData?.id)
-      .eq('succeed', false);
-    return data;
+      .eq('succeed', false)
+      .order('created_at', { ascending: false })
+      .range(start, end);
+
+    return { data: data ?? [], totalCount: count ?? 0 };
   }
+  return { data: [], totalCount: 0 };
 };
 
 export const createOrder = async (order: TradeOrder) => {
