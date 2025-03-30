@@ -5,6 +5,7 @@ import OrderItem from './orderItem';
 import { DbOrder } from '@/types/dbData';
 import useInfiniteScroll from '@/hooks/useInfiniteScroll';
 import { getSuccessOrder } from '@/app/api/order/helper';
+import OrderSkeleton from '../../_components/skeleton/orderSkeleton';
 
 interface Props {
   totalCount: number;
@@ -67,6 +68,7 @@ export default function SuccessOrderList({ totalCount, data }: Props) {
             <OrderItem order={item} />
           </li>
         ))}
+        {isPending && <OrderSkeleton />}
         {isNext && <div ref={obsRef} />}
       </ul>
     </div>
